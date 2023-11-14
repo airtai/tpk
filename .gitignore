@@ -3,5 +3,6 @@ docs/site
 temporal_data_kit.egg-info
 build
 
+__pycache__/
 .env
 .mypy_cache
