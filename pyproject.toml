@@ -179,7 +179,6 @@ concurrency = [
     "thread"
 ]
 source = [
-    "docs/docs_src",
     "temporal_data_kit",
     "tests"
 ]
