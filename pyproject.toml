@@ -1,0 +1,221 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "temporal-data-kit"
+description = "TempportalDataKit: toolset for timeseries data predictions"
+readme = "README.md"
+authors = [
+    { name = "airt", email = "info@airt.ai" },
+]
+
+keywords = ["timeseries", "machine learning"]
+
+requires-python = ">=3.8"
+
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Operating System :: OS Independent",
+    "Topic :: Internet",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development",
+    "Typing :: Typed",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: System Administrators",
+    "Environment :: Web Environment",
+]
+
+dynamic = ["version"]
+
+dependencies = [
+
+]
+
+[project.optional-dependencies]
+
+# dev dependencies
+devdocs = [
+    "mkdocs-material>=9,<10",
+    "mkdocs-static-i18n>=1,<2",
+    "mdx-include>=1.4.1,<2",
+    "mkdocstrings[python]>=0.23.0",
+    "mkdocs-literate-nav>=0.6.0",
+    "mkdocs-git-revision-date-localized-plugin>=1.2.0",
+    "mike>=2,<3",  # versioning
+    "mkdocs-macros-plugin>=1.0.0",  # includes with variables
+    "mkdocs-glightbox==0.3.4",  # img zoom
+    "pillow",
+    "cairosvg",
+]
+
+lint = [
+    "types-PyYAML",
+    "types-setuptools",
+    "types-ujson",
+    "types-Pygments",
+    "types-docutils",
+    "mypy==1.7.0",
+    "black==23.11.0",
+    "isort>=5",
+    "ruff==0.1.5",
+    "pyupgrade-directories",
+    "bandit==1.7.5",
+    "semgrep==1.48.0",
+]
+
+testing = [
+    "coverage[toml]>=7.2,<8",
+    "pytest==7.4.3,<8",
+    "pytest-asyncio>=0.21",
+    "dirty-equals==0.6.0",
+]
+
+dev = [
+    "temporal-data-kit[lint,testing,devdocs]",
+    "pre-commit==3.5.0",
+    "detect-secrets==1.4.0",
+]
+
+[project.urls]
+Homepage = "https://temporal_data_kit.airt.ai/"
+Documentation = "https://temporal_data_kit.airt.ai/latest/getting-started/"
+Tracker = "https://github.com/airtai/temporal-data-kit/issues"
+Source = "https://github.com/airtai/temporal-data-kit"
+
+[project.scripts]
+
+[tool.hatch.version]
+path = "temporal_data_kit/__about__.py"
+
+[tool.hatch.build]
+skip-excluded-dirs = true
+exclude = [
+    "/tests",
+    "/docs",
+]
+
+[tool.mypy]
+strict = true
+python_version = "3.8"
+ignore_missing_imports = true
+install_types = true
+non_interactive = true
+plugins = [
+    "pydantic.mypy"
+]
+
+# from https://blog.wolt.com/engineering/2021/09/30/professional-grade-mypy-configuration/
+disallow_untyped_defs = true
+no_implicit_optional = true
+check_untyped_defs = true
+warn_return_any = true
+show_error_codes = true
+warn_unused_ignores = false
+
+disallow_incomplete_defs = true
+disallow_untyped_decorators = true
+disallow_any_unimported = false
+
+[tool.isort]
+profile = "black"
+known_first_party = ["temporal_data_kit"]
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+include = '\.pyi?$'
+
+[tool.ruff]
+fix = true
+line-length = 88
+target-version = "py38"
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "C",  # flake8-comprehensions
+    "B",  # flake8-bugbear
+    "Q",  # flake8-quotes
+]
+ignore = [
+    "E501",  # line too long, handled by black
+    "C901",  # too complex
+]
+
+[tool.ruff.pydocstyle]
+convention = "google"
+
+[tool.ruff.flake8-bugbear]
+extend-immutable-calls = [
+]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = "-q -m 'not slow'"
+testpaths = [
+    "tests",
+]
+markers = [
+    "all",
+]
+
+[tool.coverage.run]
+parallel = true
+branch = true
+concurrency = [
+    "multiprocessing",
+    "thread"
+]
+source = [
+    "docs/docs_src",
+    "temporal_data_kit",
+    "tests"
+]
+context = '${CONTEXT}'
+omit = [
+    "**/__init__.py",
+    "tests/mypy/*",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_empty = true
+exclude_lines = [
+    ".*# pragma: no cover",
+    "if __name__ == .__main__.:",
+    "self.logger",
+    "def __repr__",
+    "lambda: None",
+    "from .*",
+    "import .*",
+    '@(abc\.)?abstractmethod',
+    "raise NotImplementedError",
+    'raise AssertionError',
+    'raise ValueError',
+    'logger\..*',
+    "pass",
+    '\.\.\.',
+]
+omit = [
+    '*/__about__.py',
+    '*/__main__.py',
+    '*/__init__.py',
+    '*/annotations.py',
+]
+
+[tool.bandit]
