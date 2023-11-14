@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
-# set -o errexit
+set -o errexit
 
 # Change directory to the project root directory.
-# cd "$(dirname "$0")"/..
+cd "$(dirname "$0")"/..
 
 # Install the dependencies into the mypy env.
-# pip install --editable ".[dev]" \
-#  --retries 1 \
-#  --no-input \
-#  --quiet
+pip install --editable ".[dev]" \
+ --retries 1 \
+ --no-input \
+ --quiet
 
-# ./scripts/static-analysis.sh
+./scripts/static-analysis.sh
