@@ -7,7 +7,7 @@ import typer
 
 def get_github_releases():
     # Get the latest version from GitHub releases
-    response = requests.get("https://api.github.com/repos/airtai/autogen-agents/releases")
+    response = requests.get("https://api.github.com/repos/airtai/temporal-data-kit/releases")
     return response.json()
 
 

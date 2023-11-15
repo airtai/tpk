@@ -1,6 +1,6 @@
-site_name: Autogen Agents
+site_name: Temporal Data Kit
 # description to improve website indexing
-site_description: Unofficial agents for the Autogen framework
+site_description: Functions for handling timeseries data predictions
 site_url: https://temporal-data-kit.airt.ai/
 site_author: airt
 copyright: '&copy; 2023 <a href="https://airt.ai/" target="_blank" rel="noopener">airt</a>'
@@ -136,7 +136,7 @@ extra:
   analytics:
     provider: google
     property: G-YBVZP7H1GZ
-  social_image: https://opengraph.githubassets.com/1671805243.560327/airtai/autogen-agents
+  social_image: https://opengraph.githubassets.com/1671805243.560327/airtai/temporal-data-kit
   social:
     - icon: fontawesome/brands/discord
       link: https://discord.gg/qFm6aSqq59
