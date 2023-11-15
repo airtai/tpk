@@ -1,7 +1,7 @@
 site_name: Autogen Agents
 # description to improve website indexing
 site_description: Unofficial agents for the Autogen framework
-site_url: https://autogen-agents.airt.ai/
+site_url: https://temporal-data-kit.airt.ai/
 site_author: airt
 copyright: '&copy; 2023 <a href="https://airt.ai/" target="_blank" rel="noopener">airt</a>'
 
@@ -13,9 +13,9 @@ watch:
   # - includes
   - overrides
 
-repo_name: airtai/autogen-agents
-repo_url: https://github.com/airtai/autogen-agents
-edit_uri: https://github.com/airtai/autogen-agents/tree/main/docs/docs
+repo_name: airtai/temporal-data-kit
+repo_url: https://github.com/airtai/temporal-data-kit
+edit_uri: https://github.com/airtai/temporal-data-kit/tree/main/docs/docs
 
 theme:
   name: material
@@ -141,7 +141,7 @@ extra:
     - icon: fontawesome/brands/discord
       link: https://discord.gg/qFm6aSqq59
     - icon: fontawesome/brands/github-alt
-      link: https://github.com/airtai/autogen-agents
+      link: https://github.com/airtai/temporal-data-kit
     - icon: fontawesome/brands/twitter
       link: https://twitter.com/airt_AI
     - icon: fontawesome/brands/facebook
