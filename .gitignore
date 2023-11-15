@@ -6,3 +6,6 @@ build
 __pycache__/
 .env
 .mypy_cache
+
+site/
+site_build/

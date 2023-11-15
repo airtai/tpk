@@ -3,4 +3,4 @@
 set -e
 set -x
 
-cd docs; mkdocs build
+cd docs; python docs.py build

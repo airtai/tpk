@@ -41,7 +41,6 @@ jobs:
     strategy:
       matrix:
         python-version: ["3.8", "3.9", "3.10", "3.11"]
-        pydantic-version: ["pydantic-v1", "pydantic-v2"]
       fail-fast: false
 
     steps:
