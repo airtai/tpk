@@ -42,7 +42,9 @@ classifiers = [
 dynamic = ["version"]
 
 dependencies = [
-
+    "gluonts>=0.14.1",
+    "torch>=2.1.0",
+    "ujson>=5.8.0",
 ]
 
 [project.optional-dependencies]
