@@ -10,6 +10,9 @@ def _get_m5_dataset_raw(m5_dataset_path: Path) -> Dict[str, pd.DataFrame]:
         "sales_train_validation": pd.read_csv(
             m5_dataset_path / "sales_train_validation.csv"
         ),
+        "sales_train_evaluation": pd.read_csv(
+            m5_dataset_path / "sales_train_evaluation.csv"
+        ),
         "sample_submission": pd.read_csv(m5_dataset_path / "sample_submission.csv"),
         "sell_prices": pd.read_csv(m5_dataset_path / "sell_prices.csv"),
     }
@@ -21,7 +24,6 @@ def _stack_m5_days(df: pd.DataFrame) -> pd.DataFrame:
     df = df.stack()
     df = df.reset_index(name="n_sold")
     df = df.rename(columns={"level_6": "day"})
-    # df["day"] = pd.to_numeric(df["day"].str.removeprefix("d_"))
     return df
 
 
@@ -45,11 +47,19 @@ def _combine_m5_sales_and_sell_prices(
     return df
 
 
+def _combine_dataset(
+    df_sales: pd.DataFrame, df_calendar: pd.DataFrame, df_prices: pd.DataFrame
+) -> pd.DataFrame:
+    sales_df_days = _combine_m5_sales_and_calendar(df_sales, df_calendar)
+    complete_df = _combine_m5_sales_and_sell_prices(sales_df_days, df_prices)
+    return complete_df
+
+
 def get_m5_dataset(m5_dataset_path: Path) -> pd.DataFrame:
     dataset = _get_m5_dataset_raw(m5_dataset_path)
-    sales_df = _stack_m5_days(dataset["sales_train_validation"])
-    sales_df_days = _combine_m5_sales_and_calendar(sales_df, dataset["calendar"])
-    complete_df = _combine_m5_sales_and_sell_prices(
-        sales_df_days, dataset["sell_prices"]
+
+    return _combine_dataset(
+        dataset["sales_train_validation"], dataset["calendar"], dataset["sell_prices"]
+    ), _combine_dataset(
+        dataset["sales_train_evaluation"], dataset["calendar"], dataset["sell_prices"]
     )
-    return complete_df
