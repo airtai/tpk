@@ -1,4 +1,5 @@
 docs/site
+data/
 
 temporal_data_kit.egg-info
 build
