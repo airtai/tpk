@@ -155,7 +155,9 @@ def load_datasets(data_dir, feature_dict=False):
         )
 
         # normalized sell prices per day within the same dept
-        dept_groups = converted_price.groupby("dept_id")
+        dept_groups = converted_price.drop(
+            ["id", "item_id", "cat_id", "store_id", "state_id"], axis=1
+        ).groupby("dept_id")
         price_mean_per_dept = dept_groups.transform(np.nanmean)
         price_std_per_dept = dept_groups.transform(np.nanstd)
         normalized_price_per_group_pd = (

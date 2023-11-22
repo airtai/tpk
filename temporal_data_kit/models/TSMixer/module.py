@@ -419,7 +419,7 @@ class TSMixerModel(nn.Module):
             future_time_feat = torch.zeros_like(future_time_feat)[:, :, [0]]
         else:
             future_time_feat = future_time_feat[:, :, : self.num_future_feat]
-        _, scale = self.scaler(past_target, past_observed_values)
+        _, _, scale = self.scaler(past_target, past_observed_values)
 
         scaled_past_target = past_target / scale
 

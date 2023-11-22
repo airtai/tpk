@@ -47,6 +47,7 @@ dependencies = [
     "ujson>=5.8.0",
     "pytorch_lightning>=2.1.2",
     "scipy>=1.10.0",
+    "lightning>=2.1.0",
 ]
 
 [project.optional-dependencies]

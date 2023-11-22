@@ -1,5 +1,6 @@
 docs/site
 data/
+lightning_logs/
 
 temporal_data_kit.egg-info
 build

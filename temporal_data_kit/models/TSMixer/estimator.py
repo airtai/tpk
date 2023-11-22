@@ -19,9 +19,6 @@ from gluonts.torch.distributions import (
 from gluonts.torch.model.estimator import PyTorchLightningEstimator
 from gluonts.torch.model.predictor import PyTorchPredictor
 from gluonts.torch.modules.loss import DistributionLoss, NegativeLogLikelihood
-from gluonts.torch.util import (
-    IterableDataset,
-)
 from gluonts.transform import (
     AddObservedValuesIndicator,
     AddTimeFeatures,
@@ -38,6 +35,7 @@ from gluonts.transform import (
     VstackFeatures,
 )
 from gluonts.transform.sampler import InstanceSampler
+from lightning import LightningModule
 from torch.utils.data import DataLoader
 
 from .lightning_module import TSMixerLightningModule
@@ -56,6 +54,14 @@ TRAINING_INPUT_NAMES = PREDICTION_INPUT_NAMES + [
     "future_target",
     "future_observed_values",
 ]
+
+
+class IterableDataset(torch.utils.data.IterableDataset):
+    def __init__(self, iterable):
+        self.iterable = iterable
+
+    def __iter__(self):
+        yield from self.iterable
 
 
 class TSMixerEstimator(PyTorchLightningEstimator):
@@ -255,7 +261,7 @@ class TSMixerEstimator(PyTorchLightningEstimator):
             ]
         )
 
-    def _create_instance_splitter(self, module: TSMixerLightningModule, mode: str):
+    def _create_instance_splitter(self, module: LightningModule, mode: str):
         assert mode in ["training", "validation", "test"]
 
         instance_sampler = {
@@ -282,7 +288,7 @@ class TSMixerEstimator(PyTorchLightningEstimator):
     def create_training_data_loader(
         self,
         data: Dataset,
-        module: TSMixerLightningModule,
+        module: LightningModule,
         shuffle_buffer_length: Optional[int] = None,
         **kwargs,
     ) -> Iterable:
@@ -312,7 +318,7 @@ class TSMixerEstimator(PyTorchLightningEstimator):
     def create_validation_data_loader(
         self,
         data: Dataset,
-        module: TSMixerLightningModule,
+        module: LightningModule,
         **kwargs,
     ) -> Iterable:
         transformation = self._create_instance_splitter(
@@ -327,7 +333,7 @@ class TSMixerEstimator(PyTorchLightningEstimator):
             **kwargs,
         )
 
-    def create_lightning_module(self) -> TSMixerLightningModule:
+    def create_lightning_module(self) -> LightningModule:
         model = TSMixerModel(
             freq=self.freq,
             context_length=self.context_length,
@@ -363,7 +369,7 @@ class TSMixerEstimator(PyTorchLightningEstimator):
     def create_predictor(
         self,
         transformation: Transformation,
-        module: TSMixerLightningModule,
+        module: LightningModule,
     ) -> PyTorchPredictor:
         prediction_splitter = self._create_instance_splitter(module, "test")
 
