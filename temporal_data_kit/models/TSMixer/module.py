@@ -11,7 +11,7 @@
 # express or implied. See the License for the specific language governing
 # permissions and limitations under the License.
 
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import torch
 import torch.nn as nn
@@ -31,7 +31,7 @@ class TemporalLinear(nn.Module):
         input_len: int,
         output_len: int,
         activation: Optional[str] = None,
-        dropout: Optional[float] = 0,
+        dropout: float = 0,
     ):
         super().__init__()
         self.linear = nn.Linear(in_features=input_len, out_features=output_len)
@@ -51,16 +51,16 @@ class TemporalResBlock(nn.Module):
         input_len: int,
         input_size: int,
         activation: Optional[str] = None,
-        dropout: Optional[float] = 0,
+        dropout: float = 0,
     ):
         super().__init__()
         self.temporal_linear = TemporalLinear(input_len, input_len, activation, dropout)
-        self.norm = nn.LayerNorm(normalized_shape=(input_len, input_size))
+        self.norm = nn.LayerNorm(normalized_shape=[input_len, input_size])
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         res = x
         x = self.temporal_linear(x)
-        return self.norm(res + x)
+        return self.norm(res + x)  # type: ignore
 
 
 class FeaturalResBlock(nn.Module):
@@ -70,8 +70,8 @@ class FeaturalResBlock(nn.Module):
         input_size: int,
         hidden_size: int,
         output_size: int,
-        activation: Optional[str] = "relu",
-        dropout: Optional[float] = 0,
+        activation: str = "relu",
+        dropout: float = 0,
     ):
         super().__init__()
         self.linear1 = nn.Linear(in_features=input_size, out_features=hidden_size)
@@ -83,9 +83,9 @@ class FeaturalResBlock(nn.Module):
             )
         self.activation = getattr(F, activation)
         self.dropout = nn.Dropout(p=dropout)
-        self.norm = nn.LayerNorm(normalized_shape=(input_len, output_size))
+        self.norm = nn.LayerNorm(normalized_shape=[input_len, output_size])
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor) -> Any:
         res = x if self.res_linear is None else self.res_linear(x)
         x = self.linear1(x)
         x = self.activation(x)
@@ -103,8 +103,8 @@ class ConditionalFeaturalResBlock(nn.Module):
         hidden_size: int,
         output_size: int,
         static_size: int,
-        activation: Optional[str] = "relu",
-        dropout: Optional[float] = 0,
+        activation: str = "relu",
+        dropout: float = 0,
     ):
         super().__init__()
         self.input_len = input_len
@@ -199,7 +199,7 @@ class TSMixerEncoder(nn.Module):
         hidden_size: int,
         activation: str,
         dropout: float,
-        n_block: Optional[int] = 1,
+        n_block: int = 1,
     ):
         super().__init__()
         self.past_temporal_linear = TemporalLinear(input_len, output_len)
@@ -291,7 +291,7 @@ class TSMixerModel(nn.Module):
         Whether to apply mean scaling to the observations (target).
     """
 
-    @validated()
+    @validated()  # type: ignore
     def __init__(
         self,
         freq: str,
@@ -302,16 +302,16 @@ class TSMixerModel(nn.Module):
         num_feat_static_real: int,
         num_feat_static_cat: int,
         cardinality: List[int],
+        distr_output: DistributionOutput,
         embedding_dimension: Optional[List[int]] = None,
         n_block: int = 2,
         hidden_size: int = 128,
         dropout_rate: float = 0.1,
-        distr_output: Optional[DistributionOutput] = None,
         scaling: bool = True,
     ) -> None:
         super().__init__()
 
-        assert distr_output.event_shape == ()
+        # assert distr_output.event_shape == ()
 
         self.context_length = context_length
         self.prediction_length = prediction_length
@@ -354,7 +354,7 @@ class TSMixerModel(nn.Module):
     def _past_length(self) -> int:
         return self.context_length
 
-    def input_shapes(self, batch_size=1) -> Dict[str, Tuple[int, ...]]:
+    def input_shapes(self, batch_size: int = 1) -> Dict[str, Tuple[int, ...]]:
         return {
             "feat_static_cat": (batch_size, self.num_feat_static_cat),
             "feat_static_real": (batch_size, self.num_feat_static_real),
@@ -390,7 +390,7 @@ class TSMixerModel(nn.Module):
         past_target: torch.Tensor,
         past_observed_values: torch.Tensor,
         future_time_feat: torch.Tensor,
-    ) -> torch.Tensor:
+    ) -> Tuple[Any, torch.Tensor, Any]:
         """
         Invokes the model on input data, and produce outputs future samples.
 

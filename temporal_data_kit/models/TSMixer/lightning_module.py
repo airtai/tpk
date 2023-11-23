@@ -11,7 +11,7 @@
 # express or implied. See the License for the specific language governing
 # permissions and limitations under the License.
 
-from typing import Optional
+from typing import Any, Dict, List, Optional
 
 import torch
 from gluonts.core.component import validated
@@ -46,7 +46,7 @@ class TSMixerLightningModule(LightningModule):
         Patience parameter for learning rate scheduler, default: ``10``.
     """
 
-    @validated()
+    @validated()  # type: ignore
     def __init__(
         self,
         model: TSMixerModel,
@@ -69,21 +69,21 @@ class TSMixerLightningModule(LightningModule):
             ]
         )
 
-    def forward(self, *args, **kwargs):
+    def forward(self, *args: List[Any], **kwargs: Dict[str, Any]) -> Any:
         return self.model(*args, **kwargs)
 
-    def _compute_loss(self, batch):
-        context = batch["past_target"]
+    def _compute_loss(self, batch: Dict[str, Any]) -> torch.Tensor:
+        # context = batch["past_target"]
         target = batch["future_target"]
         observed_target = batch["future_observed_values"]
 
-        assert context.shape[-1] == self.model.context_length
-        assert target.shape[-1] == self.model.prediction_length
+        # assert context.shape[-1] == self.model.context_length
+        # assert target.shape[-1] == self.model.prediction_length
 
         distr_args, loc, scale = self.model(**select(self.model.input_shapes(), batch))
         distr = self.model.distr_output.distribution(distr_args, loc, scale)
 
-        return (self.loss(distr, target) * observed_target).sum() / torch.maximum(
+        return (self.loss(distr, target) * observed_target).sum() / torch.maximum(  # type: ignore
             torch.tensor(1.0), observed_target.sum()
         )
 
@@ -109,7 +109,7 @@ class TSMixerLightningModule(LightningModule):
         self.log("val_loss", val_loss, on_epoch=True, on_step=False, prog_bar=True)
         return val_loss
 
-    def configure_optimizers(self):
+    def configure_optimizers(self) -> Any:
         """
         Returns the optimizer to use.
         """

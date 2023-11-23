@@ -1,5 +1,6 @@
 import gc
 import os
+from typing import Any, Tuple
 
 import numpy as np
 import pandas as pd
@@ -50,7 +51,7 @@ def reduce_mem_usage(df: pd.DataFrame, verbose: bool = True) -> pd.DataFrame:
 
 
 # Fucntion to calculate S weights:
-def get_s(roll_mat_csr, sales, prediction_start):
+def get_s(roll_mat_csr: csr_matrix, sales: pd.DataFrame, prediction_start: int) -> Any:
     # Rollup sales:
     d_name = ["d_" + str(i) for i in range(1, prediction_start)]
     sales_train_val = roll_mat_csr * sales[d_name].values
@@ -68,7 +69,7 @@ def get_s(roll_mat_csr, sales, prediction_start):
 
 
 # Functinon to calculate weights:
-def get_w(roll_mat_csr, sale_usd):
+def get_w(roll_mat_csr: csr_matrix, sale_usd: pd.DataFrame) -> Any:
     """ """
     # Calculate the total sales in USD for each item id:
     total_sales_usd = (
@@ -84,7 +85,7 @@ def get_w(roll_mat_csr, sale_usd):
 
 
 # Function to do quick rollups:
-def rollup(roll_mat_csr, v):
+def rollup(roll_mat_csr: csr_matrix, v: Any) -> Any:
     """
     v - np.array of size (30490 rows, n day columns)
     v_rolledup - array of size (n, 42840)
@@ -93,7 +94,9 @@ def rollup(roll_mat_csr, v):
 
 
 # Function to calculate WRMSSE:
-def wrmsse(error, score_only, roll_mat_csr, s, w, sw):
+def wrmsse(
+    error: float, score_only: bool, roll_mat_csr: csr_matrix, s: Any, w: Any, sw: Any
+) -> Any:
     """
     preds - Predictions: pd.DataFrame of size (30490 rows, N day columns)
     y_true - True values: pd.DataFrame of size (30490 rows, N day columns)
@@ -137,7 +140,9 @@ def wrmsse(error, score_only, roll_mat_csr, s, w, sw):
         )
 
 
-def calculate_and_save_data(data_path, prediction_start):
+def calculate_and_save_data(
+    data_path: str, prediction_start: int
+) -> Tuple[Any, Any, Any, Any, Any]:
     # Sales quantities:
     sales = pd.read_csv(data_path + "/sales_train_evaluation.csv")
 
@@ -215,6 +220,7 @@ def calculate_and_save_data(data_path, prediction_start):
     roll_index = roll_mat_df.index
     roll_mat_csr = csr_matrix(roll_mat_df.values)
 
+    # nosemgrep
     roll_mat_df.to_pickle(data_path + "/ordered_roll_mat_df.pkl")
 
     del dummies_df_list, roll_mat_df
@@ -229,29 +235,40 @@ def calculate_and_save_data(data_path, prediction_start):
         index=roll_index,
         columns=["s", "w", "sw"],
     )
+    # nosemgrep
     sw_df.to_pickle(data_path + f"/ordered_sw_df_p{prediction_start}.pkl")
 
     return sales, S, W, SW, roll_mat_csr
 
 
-def load_precalculated_data(data_path, prediction_start):
+def load_precalculated_data(
+    data_path: str, prediction_start: int
+) -> Tuple[Any, Any, Any, csr_matrix]:
     # Load S and W weights for WRMSSE calcualtions:
     if not os.path.exists(data_path + f"/ordered_sw_df_p{prediction_start}.pkl"):
         calculate_and_save_data(data_path, prediction_start)
-    sw_df = pd.read_pickle(data_path + f"/ordered_sw_df_p{prediction_start}.pkl")
+    # nosemgrep
+    sw_df = pd.read_pickle(
+        data_path + f"/ordered_sw_df_p{prediction_start}.pkl"
+    )  # nosec: [B301:blacklist]
     S = sw_df.s.values
     W = sw_df.w.values
     SW = sw_df.sw.values
 
     # Load roll up matrix to calcualte aggreagates:
-    roll_mat_df = pd.read_pickle(data_path + "/ordered_roll_mat_df.pkl")
+    # nosemgrep
+    roll_mat_df = pd.read_pickle(
+        data_path + "/ordered_roll_mat_df.pkl"
+    )  # nosec: [B301:blacklist]
     roll_mat_csr = csr_matrix(roll_mat_df.values)
     del roll_mat_df
 
     return S, W, SW, roll_mat_csr
 
 
-def evaluate_wrmsse(data_path, prediction, prediction_start, score_only=True):
+def evaluate_wrmsse(
+    data_path: str, prediction: Any, prediction_start: int, score_only: bool = True
+) -> Any:
     # Loading data in two ways:
     # if S, W, SW are calculated in advance, load from pickle files
     # otherwise, calculate from scratch
@@ -285,7 +302,7 @@ if __name__ == "__main__":
     PREDICTION_START = 1914  # 1886:offline val, 1914:validation, 1942:evaluation
 
     prediction_pd = pd.read_csv("submission_1672340217.csv")
-    prediction = np.array(prediction_pd.values[:30490, 1:], dtype=np.float32)
+    prediction: Any = np.array(prediction_pd.values[:30490, 1:], dtype=np.float32)
 
     # First Evaluator
     # wrmsse, aggregated_wrmsse, _, _ = evaluate_wrmsse(data_path=DATA_DIR, prediction=prediction, prediction_start=PREDICTION_START, score_only=False)

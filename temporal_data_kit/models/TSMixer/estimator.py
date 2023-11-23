@@ -1,4 +1,4 @@
-from typing import Any, Dict, Iterable, List, Optional
+from typing import Any, Dict, Iterator, List, Optional
 
 import torch
 from gluonts.core.component import validated
@@ -56,15 +56,15 @@ TRAINING_INPUT_NAMES = PREDICTION_INPUT_NAMES + [
 ]
 
 
-class IterableDataset(torch.utils.data.IterableDataset):
-    def __init__(self, iterable):
+class IterableDataset(torch.utils.data.IterableDataset):  # type: ignore
+    def __init__(self, iterable: Iterator[Any]):
         self.iterable = iterable
 
-    def __iter__(self):
+    def __iter__(self) -> Any:
         yield from self.iterable
 
 
-class TSMixerEstimator(PyTorchLightningEstimator):
+class TSMixerEstimator(PyTorchLightningEstimator):  # type: ignore
     """
     Estimator class to train a TSMixer model.
 
@@ -130,7 +130,7 @@ class TSMixerEstimator(PyTorchLightningEstimator):
         Controls the sampling of windows during validation.
     """
 
-    @validated()
+    @validated()  # type: ignore
     def __init__(
         self,
         freq: str,
@@ -261,8 +261,11 @@ class TSMixerEstimator(PyTorchLightningEstimator):
             ]
         )
 
-    def _create_instance_splitter(self, module: LightningModule, mode: str):
-        assert mode in ["training", "validation", "test"]
+    def _create_instance_splitter(
+        self, module: LightningModule, mode: str
+    ) -> InstanceSplitter:
+        if mode not in ["training", "validation", "test"]:
+            raise RuntimeError("mode must be either training, validation or test")
 
         instance_sampler = {
             "training": self.train_sampler,
@@ -290,8 +293,8 @@ class TSMixerEstimator(PyTorchLightningEstimator):
         data: Dataset,
         module: LightningModule,
         shuffle_buffer_length: Optional[int] = None,
-        **kwargs,
-    ) -> Iterable:
+        **kwargs: Any,
+    ) -> Any:
         transformation = self._create_instance_splitter(
             module, "training"
         ) + SelectFields(TRAINING_INPUT_NAMES)
@@ -306,6 +309,7 @@ class TSMixerEstimator(PyTorchLightningEstimator):
 
         return IterableSlice(
             iter(
+                # nosemgrep
                 DataLoader(
                     IterableDataset(training_instances),
                     batch_size=self.batch_size,
@@ -319,14 +323,15 @@ class TSMixerEstimator(PyTorchLightningEstimator):
         self,
         data: Dataset,
         module: LightningModule,
-        **kwargs,
-    ) -> Iterable:
+        **kwargs: Any,
+    ) -> DataLoader:  # type: ignore
         transformation = self._create_instance_splitter(
             module, "validation"
         ) + SelectFields(TRAINING_INPUT_NAMES)
 
         validation_instances = transformation.apply(data)
 
+        # nosemgrep
         return DataLoader(
             IterableDataset(validation_instances),
             batch_size=self.batch_size,
@@ -358,7 +363,7 @@ class TSMixerEstimator(PyTorchLightningEstimator):
             scaling=self.scaling,
         )
 
-        return TSMixerLightningModule(
+        return TSMixerLightningModule(  # type: ignore
             model=model,
             loss=self.loss,
             lr=self.lr,

@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import List, Tuple
 
 import numpy as np
 import pandas as pd
@@ -11,7 +12,7 @@ VAL_START = 1886  # 1969 - 3 * 28 + 1
 TEST_START = 1914  # 1969 - 2 * 28 + 1
 
 
-def convert_price_file(m5_input_path):
+def convert_price_file(m5_input_path: str) -> None:
     # load data
     calendar = pd.read_csv(f"{m5_input_path}/calendar.csv")
     sales_train_evaluation = pd.read_csv(f"{m5_input_path}/sales_train_evaluation.csv")
@@ -50,7 +51,9 @@ def convert_price_file(m5_input_path):
     )
 
 
-def load_datasets(data_dir, feature_dict=False):
+def load_datasets(
+    data_dir: str,
+) -> Tuple[ListDataset, ListDataset, ListDataset, List[int]]:
     calendar = pd.read_csv(f"{data_dir}/calendar.csv")
     sales_train_evaluation = pd.read_csv(f"{data_dir}/sales_train_evaluation.csv")
 
@@ -93,32 +96,16 @@ def load_datasets(data_dir, feature_dict=False):
     item_ids = sales_train_evaluation["item_id"].astype("category").cat.codes.values
     item_ids_un, item_ids_counts = np.unique(item_ids, return_counts=True)
 
-    if feature_dict:
-        stat_cat = {
-            "item_ids": item_ids.reshape(-1, 1),
-            "dept_ids": dept_ids.reshape(-1, 1),
-            "cat_ids": cat_ids.reshape(-1, 1),
-            "store_ids": store_ids.reshape(-1, 1),
-            "state_ids": state_ids.reshape(-1, 1),
-        }
-        stat_cat_cardinalities = {
-            "item_ids": len(item_ids_un),
-            "dept_ids": len(dept_ids_un),
-            "cat_ids": len(cat_ids_un),
-            "store_ids": len(store_ids_un),
-            "state_ids": len(state_ids_un),
-        }
-    else:
-        stat_cat_list = [item_ids, dept_ids, cat_ids, store_ids, state_ids]
-        stat_cat = np.concatenate(stat_cat_list)
-        stat_cat = stat_cat.reshape(len(stat_cat_list), len(item_ids)).T
-        stat_cat_cardinalities = [
-            len(item_ids_un),
-            len(dept_ids_un),
-            len(cat_ids_un),
-            len(store_ids_un),
-            len(state_ids_un),
-        ]
+    stat_cat_list = [item_ids, dept_ids, cat_ids, store_ids, state_ids]
+    stat_cat = np.concatenate(stat_cat_list)
+    stat_cat = stat_cat.reshape(len(stat_cat_list), len(item_ids)).T  # type: ignore
+    stat_cat_cardinalities = [
+        len(item_ids_un),
+        len(dept_ids_un),
+        len(cat_ids_un),
+        len(store_ids_un),
+        len(state_ids_un),
+    ]  # type: ignore
 
     train_df = sales_train_evaluation.drop(
         ["id", "item_id", "dept_id", "cat_id", "store_id", "state_id"], axis=1
@@ -193,96 +180,49 @@ def load_datasets(data_dir, feature_dict=False):
 
     m5_dates = [pd.Timestamp("2011-01-29") for _ in range(len(sales_train_evaluation))]
 
-    if feature_dict:
-        train_ds = ListDataset(
-            [
-                {
-                    FieldName.TARGET: target,
-                    FieldName.START: start,
-                    FieldName.FEAT_DYNAMIC_REAL: fdr,
-                    **{k: v[i] for k, v in stat_cat.items()},
-                }
-                for i, (target, start, fdr) in enumerate(
-                    zip(train_target_values, m5_dates, train_dynamic_real)
-                )
-            ],
-            freq="D",
-        )
+    train_ds = ListDataset(
+        [
+            {
+                FieldName.TARGET: target,
+                FieldName.START: start,
+                FieldName.FEAT_DYNAMIC_REAL: fdr,
+                FieldName.FEAT_STATIC_CAT: fsc,
+            }
+            for (target, start, fdr, fsc) in zip(
+                train_target_values, m5_dates, train_dynamic_real, stat_cat
+            )
+        ],
+        freq="D",
+    )
 
-        val_ds = ListDataset(
-            [
-                {
-                    FieldName.TARGET: target,
-                    FieldName.START: start,
-                    FieldName.FEAT_DYNAMIC_REAL: fdr,
-                    **{k: v[i] for k, v in stat_cat.items()},
-                }
-                for i, (target, start, fdr) in enumerate(
-                    zip(val_target_values, m5_dates, val_dynamic_real)
-                )
-            ],
-            freq="D",
-        )
+    val_ds = ListDataset(
+        [
+            {
+                FieldName.TARGET: target,
+                FieldName.START: start,
+                FieldName.FEAT_DYNAMIC_REAL: fdr,
+                FieldName.FEAT_STATIC_CAT: fsc,
+            }
+            for (target, start, fdr, fsc) in zip(
+                val_target_values, m5_dates, val_dynamic_real, stat_cat
+            )
+        ],
+        freq="D",
+    )
 
-        test_ds = ListDataset(
-            [
-                {
-                    FieldName.TARGET: target,
-                    FieldName.START: start,
-                    FieldName.FEAT_DYNAMIC_REAL: fdr,
-                    **{k: v[i] for k, v in stat_cat.items()},
-                }
-                for i, (target, start, fdr) in enumerate(
-                    zip(test_target_values, m5_dates, test_dynamic_real)
-                )
-            ],
-            freq="D",
-        )
-
-    else:
-        train_ds = ListDataset(
-            [
-                {
-                    FieldName.TARGET: target,
-                    FieldName.START: start,
-                    FieldName.FEAT_DYNAMIC_REAL: fdr,
-                    FieldName.FEAT_STATIC_CAT: fsc,
-                }
-                for (target, start, fdr, fsc) in zip(
-                    train_target_values, m5_dates, train_dynamic_real, stat_cat
-                )
-            ],
-            freq="D",
-        )
-
-        val_ds = ListDataset(
-            [
-                {
-                    FieldName.TARGET: target,
-                    FieldName.START: start,
-                    FieldName.FEAT_DYNAMIC_REAL: fdr,
-                    FieldName.FEAT_STATIC_CAT: fsc,
-                }
-                for (target, start, fdr, fsc) in zip(
-                    val_target_values, m5_dates, val_dynamic_real, stat_cat
-                )
-            ],
-            freq="D",
-        )
-
-        test_ds = ListDataset(
-            [
-                {
-                    FieldName.TARGET: target,
-                    FieldName.START: start,
-                    FieldName.FEAT_DYNAMIC_REAL: fdr,
-                    FieldName.FEAT_STATIC_CAT: fsc,
-                }
-                for (target, start, fdr, fsc) in zip(
-                    test_target_values, m5_dates, test_dynamic_real, stat_cat
-                )
-            ],
-            freq="D",
-        )
+    test_ds = ListDataset(
+        [
+            {
+                FieldName.TARGET: target,
+                FieldName.START: start,
+                FieldName.FEAT_DYNAMIC_REAL: fdr,
+                FieldName.FEAT_STATIC_CAT: fsc,
+            }
+            for (target, start, fdr, fsc) in zip(
+                test_target_values, m5_dates, test_dynamic_real, stat_cat
+            )
+        ],
+        freq="D",
+    )
 
     return train_ds, val_ds, test_ds, stat_cat_cardinalities

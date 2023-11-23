@@ -1,7 +1,7 @@
 import argparse
 import os
 import time
-from typing import Any
+from typing import Any, List
 
 import numpy as np
 import pandas as pd
@@ -55,7 +55,7 @@ def set_seed(seed: int) -> None:
 
 
 def get_tsmixer_estimator(
-    args: Any, cardinality: int, ckpt_dir: str, callbacks: Any
+    args: Any, cardinality: List[int], ckpt_dir: str, callbacks: Any
 ) -> TSMixerEstimator:
     estimator = TSMixerEstimator(
         prediction_length=PREDICTION_LENGTH,
@@ -81,10 +81,16 @@ def get_tsmixer_estimator(
             # "ckpt_path": ckpt_dir,
         },
     )
-    return estimator
+    return estimator  # type: ignore
 
 
-def evaluate(data_dir, dataset, predictor, prediction_start, debug=False):
+def evaluate(
+    data_dir: str,
+    dataset: Any,
+    predictor: Any,
+    prediction_start: int,
+    debug: bool = False,
+) -> Any:
     forecast_it, _ = make_evaluation_predictions(
         dataset=dataset, predictor=predictor, num_samples=100
     )
