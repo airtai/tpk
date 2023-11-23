@@ -13,17 +13,17 @@
 
 from typing import Optional
 
-import pytorch_lightning as pl
 import torch
 from gluonts.core.component import validated
 from gluonts.itertools import select
 from gluonts.torch.modules.loss import DistributionLoss, NegativeLogLikelihood
+from lightning.pytorch import LightningModule
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 
 from .module import TSMixerModel
 
 
-class TSMixerLightningModule(pl.LightningModule):
+class TSMixerLightningModule(LightningModule):
     """
     A ``pl.LightningModule`` class that can be used to train a
     ``TSMixerModel`` with PyTorch Lightning.

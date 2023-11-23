@@ -11,7 +11,7 @@ from gluonts.evaluation.backtest import make_evaluation_predictions
 from gluonts.model.forecast import QuantileForecast
 from gluonts.torch.distributions import NegativeBinomialOutput
 from gluonts.torch.model.forecast import DistributionForecast as PTDistributionForecast
-from pytorch_lightning.callbacks.early_stopping import EarlyStopping
+from lightning.pytorch.callbacks.early_stopping import EarlyStopping
 
 from temporal_data_kit.datasets.m5_tsmixer import (
     N_TS,
@@ -78,7 +78,7 @@ def get_tsmixer_estimator(
             "devices": 1,
             "max_epochs": 1 if args.debug else 300,
             "callbacks": callbacks,
-            "ckpt_kwargs": {"dirpath": ckpt_dir},
+            # "ckpt_path": ckpt_dir,
         },
     )
     return estimator
