@@ -6,12 +6,12 @@ from typing import Any
 import numpy as np
 import pandas as pd
 import torch
-import tqdm
 from gluonts.evaluation.backtest import make_evaluation_predictions
 from gluonts.model.forecast import QuantileForecast
 from gluonts.torch.distributions import NegativeBinomialOutput
 from gluonts.torch.model.forecast import DistributionForecast as PTDistributionForecast
 from lightning.pytorch.callbacks.early_stopping import EarlyStopping
+from tqdm import tqdm
 
 from temporal_data_kit.datasets.m5_tsmixer import (
     N_TS,
