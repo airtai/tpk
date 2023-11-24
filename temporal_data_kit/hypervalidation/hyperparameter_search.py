@@ -108,6 +108,9 @@ def objective(
 def run_study(
     study_journal_path: Path, study_name: str, data_path: Path, n_trials: int
 ) -> None:
+    if not study_journal_path.exists():
+        study_journal_path.mkdir(exist_ok=True)
+
     storage = optuna.storages.JournalStorage(
         optuna.storages.JournalFileStorage(str(study_journal_path / "journal.log")),
     )
