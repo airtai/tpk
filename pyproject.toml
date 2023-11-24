@@ -42,7 +42,13 @@ classifiers = [
 dynamic = ["version"]
 
 dependencies = [
-
+    "gluonts>=0.14.1",
+    "torch>=2.1.0",
+    "ujson>=5.8.0",
+    "pytorch_lightning>=2.1.2",
+    "scipy>=1.10.0",
+    "lightning>=2.1.0",
+    "tqdm",
 ]
 
 [project.optional-dependencies]
@@ -57,7 +63,9 @@ devdocs = [
     "mkdocs-git-revision-date-localized-plugin>=1.2.0",
     "mike>=2,<3",  # versioning
     "mkdocs-macros-plugin>=1.0.0",  # includes with variables
+    "mkdocs-minify-plugin>=0.7.1",
     "mkdocs-glightbox==0.3.4",  # img zoom
+    "typer>=0.9.0",
     "pillow",
     "cairosvg",
 ]
@@ -68,6 +76,7 @@ lint = [
     "types-ujson",
     "types-Pygments",
     "types-docutils",
+    "types-tqdm",
     "mypy==1.7.0",
     "black==23.11.0",
     "isort>=5",
@@ -105,6 +114,7 @@ path = "temporal_data_kit/__about__.py"
 skip-excluded-dirs = true
 exclude = [
     "/tests",
+    "/benchmarks",
     "/docs",
 ]
 
@@ -161,14 +171,19 @@ convention = "google"
 extend-immutable-calls = [
 ]
 
+[tool.pytest]
+pythonpath = "benchmarks"
+
 [tool.pytest.ini_options]
 minversion = "7.0"
 addopts = "-q -m 'not slow'"
 testpaths = [
     "tests",
+    "benchmarks/tests",
 ]
 markers = [
     "all",
+    "slow",
 ]
 
 [tool.coverage.run]
@@ -179,6 +194,7 @@ concurrency = [
     "thread"
 ]
 source = [
+    "docs/docs_src",
     "temporal_data_kit",
     "tests"
 ]
