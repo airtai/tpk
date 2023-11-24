@@ -114,6 +114,7 @@ path = "temporal_data_kit/__about__.py"
 skip-excluded-dirs = true
 exclude = [
     "/tests",
+    "/benchmarks",
     "/docs",
 ]
 
@@ -170,11 +171,15 @@ convention = "google"
 extend-immutable-calls = [
 ]
 
+[tool.pytest]
+pythonpath = "benchmarks"
+
 [tool.pytest.ini_options]
 minversion = "7.0"
 addopts = "-q -m 'not slow'"
 testpaths = [
     "tests",
+    "benchmarks/tests",
 ]
 markers = [
     "all",

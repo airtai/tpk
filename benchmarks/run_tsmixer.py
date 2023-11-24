@@ -13,15 +13,16 @@ from gluonts.torch.model.forecast import DistributionForecast as PTDistributionF
 from lightning.pytorch.callbacks.early_stopping import EarlyStopping
 from tqdm import tqdm
 
-from temporal_data_kit.datasets.m5_tsmixer import (
+from temporal_data_kit.testing.datasets.m5 import (
     N_TS,
     PREDICTION_LENGTH,
     TEST_START,
     VAL_START,
+    evaluate_wrmsse,
     load_datasets,
 )
-from temporal_data_kit.models.TSMixer.accuracy_evaluator import evaluate_wrmsse
-from temporal_data_kit.models.TSMixer.estimator import TSMixerEstimator
+
+from .models.tsmixer.estimator import TSMixerEstimator
 
 
 def parse_args() -> Any:
@@ -131,7 +132,7 @@ def main() -> None:
     )
 
     start_training_time = time.time()
-    predictor = estimator.train(train_ds, validation_data=val_ds, num_workers=8)
+    predictor = estimator.train(train_ds, validation_data=val_ds, num_workers=32)
     end_training_time = time.time()
     elasped_training_time = end_training_time - start_training_time
     print(f"Training finished in {elasped_training_time} secconds")

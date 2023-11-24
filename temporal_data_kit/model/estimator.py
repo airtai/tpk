@@ -313,6 +313,8 @@ class TSMixerEstimator(PyTorchLightningEstimator):  # type: ignore
                 DataLoader(
                     IterableDataset(training_instances),
                     batch_size=self.batch_size,
+                    num_workers=2,
+                    persistent_workers=True,
                     **kwargs,
                 )
             ),
@@ -335,6 +337,8 @@ class TSMixerEstimator(PyTorchLightningEstimator):  # type: ignore
         return DataLoader(
             IterableDataset(validation_instances),
             batch_size=self.batch_size,
+            num_workers=2,
+            persistent_workers=True,
             **kwargs,
         )
 
