@@ -2,7 +2,7 @@
 set -e
 
 echo "Running mypy..."
-mypy temporal_data_kit
+mypy temporal_data_kit tests benchmarks
 
 echo "Running bandit..."
 bandit -c pyproject.toml -r temporal_data_kit

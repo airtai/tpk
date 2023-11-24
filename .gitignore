@@ -1,4 +1,7 @@
 docs/site
+data/
+lightning_logs/
+result.csv
 
 temporal_data_kit.egg-info
 build
@@ -9,3 +12,4 @@ __pycache__/
 
 site/
 site_build/
+.vscode/
