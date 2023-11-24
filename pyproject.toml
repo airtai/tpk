@@ -177,6 +177,7 @@ testpaths = [
 ]
 markers = [
     "all",
+    "slow",
 ]
 
 [tool.coverage.run]
