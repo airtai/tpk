@@ -56,7 +56,7 @@ def set_seed(seed: int) -> None:
 
 
 def get_tsmixer_estimator(
-    args: Any, cardinality: List[int], ckpt_dir: str, callbacks: Any
+    args: Any, cardinality: List[int], callbacks: Any
 ) -> TSMixerEstimator:
     estimator = TSMixerEstimator(
         prediction_length=PREDICTION_LENGTH,
@@ -79,7 +79,6 @@ def get_tsmixer_estimator(
             "devices": 1,
             "max_epochs": 1 if args.debug else 300,
             "callbacks": callbacks,
-            # "ckpt_path": ckpt_dir,
         },
     )
     return estimator  # type: ignore
@@ -118,16 +117,12 @@ def main() -> None:
     args = parse_args()
     set_seed(args.seed)
 
-    exp_id = f"{args.model}_nb{args.n_block}_dp{args.dropout}_hs{args.hidden_size}_ds{int(args.disable_static)}_df{int(args.disable_future)}_s{args.seed}"
-
     train_ds, val_ds, test_ds, stat_cat_cardinalities = load_datasets(args.data_dir)
 
     early_stop_callback = EarlyStopping(monitor="val_loss", patience=args.patience)
-    ckpt_dir = f"{args.ckpt_dir}/{exp_id}"
     estimator = get_tsmixer_estimator(
         args,
         cardinality=stat_cat_cardinalities,
-        ckpt_dir=ckpt_dir,
         callbacks=[early_stop_callback],
     )
 
