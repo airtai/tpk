@@ -11,7 +11,8 @@ def pytest_configure(config):
     file after command line options have been parsed.
     """
     download_datasets()
- 
+
+
 def pytest_collection_modifyitems(items):
     for item in items:
         item.add_marker("all")
