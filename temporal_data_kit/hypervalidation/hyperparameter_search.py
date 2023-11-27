@@ -26,16 +26,12 @@ def evaluate(
     dataset: Any,
     predictor: Any,
     prediction_start: int,
-    debug: bool = False,
 ) -> Any:
     forecast_it, _ = make_evaluation_predictions(
         dataset=dataset, predictor=predictor, num_samples=100
     )
 
-    if debug:
-        forecasts = [next(forecast_it)] * len(dataset)
-    else:
-        forecasts = list(tqdm(forecast_it, total=len(dataset)))
+    forecasts = list(tqdm(forecast_it, total=len(dataset)))
 
     forecasts_acc = np.zeros((len(forecasts), PREDICTION_LENGTH))
     if isinstance(forecasts[0], (PTDistributionForecast, QuantileForecast)):
@@ -99,7 +95,7 @@ def objective(
 
         predictor = estimator.train(train_ds, validation_data=val_ds, num_workers=32)
 
-        val_wrmsse = evaluate(data_path, val_ds, predictor, VAL_START, debug=debug)
+        val_wrmsse = evaluate(data_path, val_ds, predictor, VAL_START)
         return val_wrmsse  # type: ignore
 
     return _inner
@@ -120,4 +116,6 @@ def run_study(
         directions=["minimize"],
         study_name=study_name,
     )
-    study.optimize(objective(str(data_path)), n_trials=n_trials)
+    study.optimize(
+        objective(str(data_path)), n_trials=n_trials, catch=(ValueError,)
+    )  # Model diverging with ValueError, catch and go to next trial
