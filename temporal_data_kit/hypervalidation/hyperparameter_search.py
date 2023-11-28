@@ -1,108 +1,102 @@
+import asyncio
+import shlex
 from pathlib import Path
-from typing import Any, Callable, List, Sequence, Union
+from typing import Any, Callable, List, Optional, Sequence, Union
 
+import asyncer
 import numpy as np
 import optuna  # type: ignore[import]
-from gluonts.dataset.common import ListDataset
-from gluonts.evaluation.backtest import make_evaluation_predictions
-from gluonts.model.forecast import QuantileForecast
-from gluonts.torch.distributions import NegativeBinomialOutput
-from gluonts.torch.model.forecast import DistributionForecast as PTDistributionForecast
-from lightning.pytorch.callbacks.early_stopping import EarlyStopping
-from tqdm import tqdm
-
-from temporal_data_kit.model.estimator import TSMixerEstimator
-from temporal_data_kit.testing.datasets.m5 import (
-    N_TS,
-    PREDICTION_LENGTH,
-    VAL_START,
-    evaluate_wrmsse,
-    load_datasets,
-)
+import typer
 
 
-def evaluate(
-    data_dir: str,
-    dataset: Any,
-    predictor: Any,
-    prediction_start: int,
-) -> Any:
-    forecast_it, _ = make_evaluation_predictions(
-        dataset=dataset, predictor=predictor, num_samples=100
-    )
+async def run_model_cmd_parallel(model_cmd: str, num_executions: int) -> List[float]:
+    async with asyncer.create_task_group() as tg:
+        tasks = []
+        for _ in range(num_executions):
+            tasks.append(
+                tg.soonify(asyncio.create_subprocess_exec)(
+                    *shlex.split(model_cmd),
+                    stdout=asyncio.subprocess.PIPE,
+                    stdin=asyncio.subprocess.PIPE,
+                )
+            )
+            await asyncio.sleep(0.001)
 
-    forecasts = list(tqdm(forecast_it, total=len(dataset)))
+    procs = [task.value for task in tasks]
 
-    forecasts_acc = np.zeros((len(forecasts), PREDICTION_LENGTH))
-    if isinstance(forecasts[0], (PTDistributionForecast, QuantileForecast)):
-        for i in range(len(forecasts)):
-            forecasts_acc[i] = forecasts[i].mean
-    else:
-        for i in range(len(forecasts)):
-            forecasts_acc[i] = np.mean(forecasts[i].samples, axis=0)
-    wrmsse = evaluate_wrmsse(data_dir, forecasts_acc, prediction_start, score_only=True)
-    return wrmsse
+    async def log_output(
+        output: Optional[asyncio.StreamReader],
+        pid: int,
+    ) -> float:
+        if output is None:
+            raise RuntimeError("Expected StreamReader, got None. Is stdout piped?")
+        last_out = ""
+        while not output.at_eof():
+            outs = await output.readline()
+            if outs != b"":
+                typer.echo(f"[{pid:03d}]: " + outs.decode("utf-8"), nl=False)
+                last_out = outs.decode("utf-8").strip()
+        return float(last_out)
+
+    async with asyncer.create_task_group() as tg:
+        soon_values = [tg.soonify(log_output)(proc.stdout, proc.pid) for proc in procs]
+
+    values = [soon_value.value for soon_value in soon_values]
+
+    return values
 
 
 def objective(
     data_path: str,
-    batch_size: int = 64,
-    epochs: int = 300,
-    patience: int = 30,
-    debug: bool = False,
+    tests_per_trial: int,
 ) -> Callable[[optuna.Trial], Union[float, Sequence[float]]]:
-    train_ds, val_ds, test_ds, stat_cat_cardinalities = load_datasets(data_path)
-
     def _inner(
         trial: Any,
-        train_ds: ListDataset = train_ds,
-        val_ds: ListDataset = val_ds,
-        test_ds: ListDataset = test_ds,
-        stat_cat_cardinalities: List[int] = stat_cat_cardinalities,
-        batch_size: int = batch_size,
-        epochs: int = epochs,
-        patience: int = patience,
-        debug: bool = debug,
+        data_path: str = data_path,
+        tests_per_trial: int = tests_per_trial,
+        batch_size: int = 64,
+        epochs: int = 1,
+        patience: int = 30,
     ) -> float:
-        early_stop_callback = EarlyStopping(monitor="val_loss", patience=patience)
-        estimator = TSMixerEstimator(
-            prediction_length=PREDICTION_LENGTH,
-            context_length=trial.suggest_categorical("context_length", [20, 35, 50]),
-            n_block=trial.suggest_int("n_block", 1, 5),
-            hidden_size=trial.suggest_categorical("hidden_size", [64, 128, 256, 512]),
-            lr=trial.suggest_float("learning_rate", 0.0001, 0.5, log=True),
-            weight_decay=trial.suggest_float("weight_decay", 0.0001, 0.5, log=True),
-            dropout_rate=trial.suggest_float("dropout_rate", 0.0001, 0.5, log=True),
-            num_feat_dynamic_real=7,
-            disable_future_feature=trial.suggest_categorical(
+        trial_values = {
+            "data_path": data_path,
+            "context_length": trial.suggest_categorical("context_length", [20, 35, 50]),
+            "n_block": trial.suggest_int("n_block", 1, 5),
+            "hidden_size": trial.suggest_categorical(
+                "hidden_size", [64, 128, 256, 512]
+            ),
+            "lr": trial.suggest_float("learning_rate", 0.0001, 0.5, log=True),
+            "weight_decay": trial.suggest_float("weight_decay", 0.0001, 0.5, log=True),
+            "dropout_rate": trial.suggest_float("dropout_rate", 0.0001, 0.5, log=True),
+            "disable_future_feat": trial.suggest_categorical(
                 "disable_future", [True, False]
             ),
-            num_feat_static_cat=0
-            if trial.suggest_categorical("disable_static", [True, False])
-            else 5,
-            cardinality=stat_cat_cardinalities,
-            batch_size=batch_size,
-            freq="D",
-            distr_output=NegativeBinomialOutput(),
-            num_batches_per_epoch=(N_TS // batch_size + 1),
-            trainer_kwargs={
-                "accelerator": "gpu",
-                "devices": 1,
-                "max_epochs": epochs,
-                "callbacks": [early_stop_callback],
-            },
+            "use_static_feat": trial.suggest_categorical(
+                "use_static_feat", [True, False]
+            ),
+            "patience": patience,
+            "batch_size": batch_size,
+            "epochs": epochs,
+        }
+
+        values = asyncio.run(
+            run_model_cmd_parallel(
+                model_cmd="temporal_data_kit train-model --epochs 1",
+                num_executions=tests_per_trial,
+            )
         )
 
-        predictor = estimator.train(train_ds, validation_data=val_ds, num_workers=32)
-
-        val_wrmsse = evaluate(data_path, val_ds, predictor, VAL_START)
-        return val_wrmsse  # type: ignore
+        return float(np.mean(values))
 
     return _inner
 
 
 def run_study(
-    study_journal_path: Path, study_name: str, data_path: Path, n_trials: int
+    study_journal_path: Path,
+    study_name: str,
+    data_path: Path,
+    n_trials: int,
+    tests_per_trial: int,
 ) -> None:
     if not study_journal_path.exists():
         study_journal_path.mkdir(exist_ok=True)
@@ -117,5 +111,7 @@ def run_study(
         study_name=study_name,
     )
     study.optimize(
-        objective(str(data_path)), n_trials=n_trials, catch=(ValueError,)
+        objective(str(data_path), tests_per_trial),
+        n_trials=n_trials,
+        catch=(ValueError,),
     )  # Model diverging with ValueError, catch and go to next trial

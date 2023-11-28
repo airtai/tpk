@@ -9,9 +9,45 @@ app = typer.Typer()
 
 
 @app.command()
+def train_model(
+    data_path: str = "data/m5",
+    batch_size: int = 64,
+    epochs: int = 300,
+    patience: int = 30,
+    context_length: int = 30,
+    n_block: int = 2,
+    hidden_size: int = 256,
+    lr: float = 0.0001,
+    weight_decay: float = 0.0001,
+    dropout_rate: float = 0.0001,
+    disable_future_feat: bool = False,
+    use_static_feat: bool = True,
+) -> None:
+    from temporal_data_kit.hypervalidation import train_model as concrete_train_model
+
+    validation_wrmsse = concrete_train_model(
+        data_path=data_path,
+        batch_size=batch_size,
+        epochs=epochs,
+        patience=patience,
+        context_length=context_length,
+        n_block=n_block,
+        hidden_size=hidden_size,
+        lr=lr,
+        weight_decay=weight_decay,
+        dropout_rate=dropout_rate,
+        disable_future_feature=disable_future_feat,
+        use_static_feat=use_static_feat,
+    )
+
+    typer.echo(validation_wrmsse)
+
+
+@app.command()
 def run_study(
     study_name: str,
     n_trials: int,
+    tests_per_trial: int = 5,
     study_journal_path: str = "data/journal",
     data_path: str = "data/m5",
 ) -> None:
@@ -22,6 +58,7 @@ def run_study(
         data_path=Path(data_path),
         study_name=study_name,
         n_trials=n_trials,
+        tests_per_trial=tests_per_trial,
     )
 
 
