@@ -47,7 +47,6 @@ def train_model(
     context_length: int,
     n_block: int,
     hidden_size: int,
-    lr: float,
     weight_decay: float,
     dropout_rate: float,
     disable_future_feature: bool,
@@ -57,9 +56,9 @@ def train_model(
     estimator = TSMixerEstimator(
         prediction_length=PREDICTION_LENGTH,
         context_length=context_length,
+        epochs=epochs,
         n_block=n_block,
         hidden_size=hidden_size,
-        lr=lr,
         weight_decay=weight_decay,
         dropout_rate=dropout_rate,
         num_feat_dynamic_real=7,
