@@ -5,7 +5,6 @@ from gluonts.evaluation.backtest import make_evaluation_predictions
 from gluonts.model.forecast import QuantileForecast
 from gluonts.torch.distributions import NegativeBinomialOutput
 from gluonts.torch.model.forecast import DistributionForecast as PTDistributionForecast
-from lightning.pytorch.callbacks.early_stopping import EarlyStopping
 from tqdm import tqdm
 
 from temporal_data_kit.model.estimator import TSMixerEstimator
@@ -45,7 +44,6 @@ def train_model(
     data_path: str,
     batch_size: int,
     epochs: int,
-    patience: int,
     context_length: int,
     n_block: int,
     hidden_size: int,
@@ -56,7 +54,6 @@ def train_model(
     use_static_feat: bool,
 ) -> float:
     train_ds, val_ds, _, stat_cat_cardinalities = load_datasets(data_path)
-    early_stop_callback = EarlyStopping(monitor="val_loss", patience=patience)
     estimator = TSMixerEstimator(
         prediction_length=PREDICTION_LENGTH,
         context_length=context_length,
@@ -77,7 +74,7 @@ def train_model(
             "accelerator": "gpu",
             "devices": 1,
             "max_epochs": epochs,
-            "callbacks": [early_stop_callback],
+            "callbacks": [],
         },
     )
 

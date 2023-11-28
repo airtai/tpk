@@ -27,7 +27,7 @@ async def run_model_cmd_parallel(model_cmd: str, num_executions: int) -> List[fl
     async def log_output(
         output: Optional[asyncio.StreamReader],
         pid: int,
-    ) -> float:
+    ) -> str:
         if output is None:
             raise RuntimeError("Expected StreamReader, got None. Is stdout piped?")
         last_out = ""
@@ -36,14 +36,21 @@ async def run_model_cmd_parallel(model_cmd: str, num_executions: int) -> List[fl
             if outs != b"":
                 typer.echo(f"[{pid:03d}]: " + outs.decode("utf-8"), nl=False)
                 last_out = outs.decode("utf-8").strip()
-        return float(last_out)
+        return last_out
 
     async with asyncer.create_task_group() as tg:
         soon_values = [tg.soonify(log_output)(proc.stdout, proc.pid) for proc in procs]
 
     values = [soon_value.value for soon_value in soon_values]
 
-    return values
+    # return_codes_dict = {proc.pid: proc.returncode for proc in procs} # fails with loop closed exception
+    # if any([return_code != 0 for return_code in return_codes_dict.values()]):
+    #     raise ValueError(f"Model training process failed with exit codes (pid:returncode) = {return_codes_dict}")
+
+    try:
+        return [float(value) for value in values]
+    except:
+        raise ValueError("Model training process failed")
 
 
 def objective(
@@ -56,32 +63,31 @@ def objective(
         tests_per_trial: int = tests_per_trial,
         batch_size: int = 64,
         epochs: int = 1,
-        patience: int = 30,
     ) -> float:
         trial_values = {
-            "data_path": data_path,
-            "context_length": trial.suggest_categorical("context_length", [20, 35, 50]),
-            "n_block": trial.suggest_int("n_block", 1, 5),
-            "hidden_size": trial.suggest_categorical(
+            "data-path": data_path,
+            "context-length": trial.suggest_categorical("context_length", [20, 35, 50]),
+            "n-block": trial.suggest_int("n_block", 1, 5),
+            "hidden-size": trial.suggest_categorical(
                 "hidden_size", [64, 128, 256, 512]
             ),
             "lr": trial.suggest_float("learning_rate", 0.0001, 0.5, log=True),
-            "weight_decay": trial.suggest_float("weight_decay", 0.0001, 0.5, log=True),
-            "dropout_rate": trial.suggest_float("dropout_rate", 0.0001, 0.5, log=True),
-            "disable_future_feat": trial.suggest_categorical(
-                "disable_future", [True, False]
-            ),
-            "use_static_feat": trial.suggest_categorical(
-                "use_static_feat", [True, False]
-            ),
-            "patience": patience,
-            "batch_size": batch_size,
-            "epochs": epochs,
+            "weight-decay": trial.suggest_float("weight_decay", 0.0001, 0.5, log=True),
+            "dropout-rate": trial.suggest_float("dropout_rate", 0.0001, 0.5, log=True),
+            "batch-size": batch_size,
+            "epochs": epochs,  # trial.suggest_int("num_epochs", 1, 150)
         }
+
+        cmd = "temporal_data_kit train-model"
+
+        for key, value in trial_values.items():
+            cmd += f" --{key} {value}"
+
+        typer.echo(f"Running trial with cmd: {cmd}")
 
         values = asyncio.run(
             run_model_cmd_parallel(
-                model_cmd="temporal_data_kit train-model --epochs 1",
+                model_cmd=cmd,
                 num_executions=tests_per_trial,
             )
         )
