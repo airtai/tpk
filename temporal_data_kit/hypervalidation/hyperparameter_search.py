@@ -49,7 +49,7 @@ async def run_model_cmd_parallel(model_cmd: str, num_executions: int) -> List[fl
 
     try:
         return [float(value) for value in values]
-    except:
+    except ValueError:
         raise ValueError("Model training process failed")
 
 
