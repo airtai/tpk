@@ -50,7 +50,7 @@ async def run_model_cmd_parallel(model_cmd: str, num_executions: int) -> List[fl
     try:
         return [float(value) for value in values]
     except ValueError:
-        raise ValueError("Model training process failed")
+        raise ValueError("Model training process failed") from None
 
 
 def objective(
