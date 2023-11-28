@@ -75,7 +75,7 @@ def objective(
             "weight-decay": trial.suggest_float("weight_decay", 0.0001, 0.5, log=True),
             "dropout-rate": trial.suggest_float("dropout_rate", 0.0001, 0.5, log=True),
             "batch-size": batch_size,
-            "epochs": epochs,  # trial.suggest_int("num_epochs", 1, 150)
+            "epochs": trial.suggest_int("num_epochs", 1, 150),
         }
 
         cmd = "temporal_data_kit train-model"
