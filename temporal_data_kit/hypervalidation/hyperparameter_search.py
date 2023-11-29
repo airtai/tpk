@@ -43,10 +43,6 @@ async def run_model_cmd_parallel(model_cmd: str, num_executions: int) -> List[fl
 
     values = [soon_value.value for soon_value in soon_values]
 
-    # return_codes_dict = {proc.pid: proc.returncode for proc in procs} # fails with loop closed exception
-    # if any([return_code != 0 for return_code in return_codes_dict.values()]):
-    #     raise ValueError(f"Model training process failed with exit codes (pid:returncode) = {return_codes_dict}")
-
     try:
         return [float(value) for value in values]
     except ValueError:
