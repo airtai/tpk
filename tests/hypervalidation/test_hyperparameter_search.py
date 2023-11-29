@@ -19,8 +19,8 @@ async def test_num_workers() -> None:
 
 @pytest.mark.asyncio
 async def test_malformed_return_value() -> None:
-    with unittest.TestCase().assertRaises(ValueError) as exc:
-        results = await run_model_cmd_parallel("echo hi", num_executions=3)
+    with unittest.TestCase().assertRaises(ValueError) as _:
+        await run_model_cmd_parallel("echo hi", num_executions=3)
 
 
 @pytest.mark.slow
