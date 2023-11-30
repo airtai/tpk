@@ -4,7 +4,7 @@ from tempfile import TemporaryDirectory
 
 import pytest
 
-from temporal_data_kit.hypervalidation.hyperparameter_search import (
+from tpk.hypervalidation.hyperparameter_search import (
     run_model_cmd_parallel,
     run_study,
 )

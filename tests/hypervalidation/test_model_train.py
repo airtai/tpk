@@ -1,6 +1,6 @@
 import pytest
 
-from temporal_data_kit.hypervalidation import train_model
+from tpk.hypervalidation import train_model
 
 
 @pytest.mark.slow

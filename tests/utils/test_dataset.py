@@ -3,7 +3,7 @@ from tempfile import TemporaryDirectory
 
 import pytest
 
-from temporal_data_kit.utils.dataset import download_datasets
+from tpk.utils.dataset import download_datasets
 
 
 @pytest.mark.slow
