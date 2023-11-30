@@ -95,7 +95,7 @@ testing = [
     "pytest==7.4.3,<8",
     "pytest-asyncio>=0.21.0",
     "pytest-asyncio>=0.21",
-    "dirty-equals==0.7.1",
+    "dirty-equals==0.7.1.post0",
 ]
 
 dev = [
