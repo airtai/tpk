@@ -1,4 +1,4 @@
-__all__ = ["app", "run_study", "hello"]
+__all__ = ["app", "hello", "run_study"]
 
 
 from pathlib import Path
