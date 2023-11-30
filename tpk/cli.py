@@ -60,4 +60,4 @@ def run_study(
 
 @app.command()
 def hello() -> None:
-    print("Hi from temporal data kit")
+    print("Hi from temporal predictions kit")

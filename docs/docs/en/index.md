@@ -4,7 +4,7 @@ hide:
   - footer
 ---
 
-# Temporal Data Kit
+# Temporal Predictions Kit
 
 <b>Functions for handling timeseries data predictions</b>
 

@@ -1,2 +1,2 @@
-- [Temporal Data Kit](index.md)
+- [Temporal Predictions Kit](index.md)
 - [Release Notes](release.md)

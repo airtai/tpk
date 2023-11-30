@@ -131,7 +131,7 @@ jobs:
       - run: ls -la coverage
       - run: coverage combine coverage
       - run: coverage report
-      - run: coverage html --show-contexts --title "TemporalDataKit coverage for ${{ github.sha }}"
+      - run: coverage html --show-contexts --title "TTemporalPredictionsKit coverage for ${{ github.sha }}"
 
       - name: Store coverage html
         uses: actions/upload-artifact@v3
