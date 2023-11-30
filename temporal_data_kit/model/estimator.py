@@ -1,10 +1,13 @@
+import logging
 from typing import Any, Dict, Iterator, List, Optional
 
+import lightning.pytorch as pl
 import torch
 from gluonts.core.component import validated
 from gluonts.dataset.common import Dataset
 from gluonts.dataset.field_names import FieldName
-from gluonts.itertools import Cyclic, IterableSlice, PseudoShuffled
+from gluonts.env import env
+from gluonts.itertools import Cached, Cyclic, IterableSlice, PseudoShuffled
 from gluonts.model.forecast_generator import (
     DistributionForecastGenerator,
 )
@@ -16,7 +19,7 @@ from gluonts.torch.distributions import (
     DistributionOutput,
     StudentTOutput,
 )
-from gluonts.torch.model.estimator import PyTorchLightningEstimator
+from gluonts.torch.model.estimator import PyTorchLightningEstimator, TrainOutput
 from gluonts.torch.model.predictor import PyTorchPredictor
 from gluonts.torch.modules.loss import DistributionLoss, NegativeLogLikelihood
 from gluonts.transform import (
@@ -36,10 +39,13 @@ from gluonts.transform import (
 )
 from gluonts.transform.sampler import InstanceSampler
 from lightning import LightningModule
+from lightning.pytorch.tuner.tuning import Tuner
 from torch.utils.data import DataLoader
 
 from .lightning_module import TSMixerLightningModule
 from .module import TSMixerModel
+
+logger = logging.getLogger(__name__)
 
 PREDICTION_INPUT_NAMES = [
     "feat_static_cat",
@@ -85,8 +91,6 @@ class TSMixerEstimator(PyTorchLightningEstimator):  # type: ignore
         Number of TSMixer blocks (default: 2).
     hidden_size
         Number of hidden size for each layer (default: 128).
-    lr
-        Learning rate (default: ``1e-4``).
     weight_decay
         Weight decay regularization parameter (default: ``1e-8``).
     dropout_rate
@@ -135,10 +139,10 @@ class TSMixerEstimator(PyTorchLightningEstimator):  # type: ignore
         self,
         freq: str,
         prediction_length: int,
+        epochs: int,
         context_length: Optional[int] = None,
         n_block: int = 2,
         hidden_size: int = 128,
-        lr: float = 1e-4,
         weight_decay: float = 1e-8,
         dropout_rate: float = 0.1,
         patience: int = 10,
@@ -166,6 +170,7 @@ class TSMixerEstimator(PyTorchLightningEstimator):  # type: ignore
             default_trainer_kwargs.update(trainer_kwargs)
         super().__init__(trainer_kwargs=default_trainer_kwargs)
 
+        self.epochs = epochs
         self.freq = freq
         self.context_length = (
             context_length if context_length is not None else prediction_length
@@ -176,7 +181,6 @@ class TSMixerEstimator(PyTorchLightningEstimator):  # type: ignore
         self.loss = NegativeLogLikelihood() if loss is None else loss
         self.n_block = n_block
         self.hidden_size = hidden_size
-        self.lr = lr
         self.weight_decay = weight_decay
         self.dropout_rate = dropout_rate
         self.num_feat_dynamic_real = num_feat_dynamic_real
@@ -370,9 +374,10 @@ class TSMixerEstimator(PyTorchLightningEstimator):  # type: ignore
         return TSMixerLightningModule(  # type: ignore
             model=model,
             loss=self.loss,
-            lr=self.lr,
             weight_decay=self.weight_decay,
             patience=self.patience,
+            epochs=self.epochs,
+            steps_per_epoch=self.num_batches_per_epoch,
         )
 
     def create_predictor(
@@ -390,4 +395,94 @@ class TSMixerEstimator(PyTorchLightningEstimator):  # type: ignore
             batch_size=self.batch_size,
             prediction_length=self.prediction_length,
             device="cuda" if torch.cuda.is_available() else "cpu",
+        )
+
+    def train_model(
+        self,
+        training_data: Dataset,
+        validation_data: Optional[Dataset] = None,
+        from_predictor: Optional[PyTorchPredictor] = None,
+        shuffle_buffer_length: Optional[int] = None,
+        cache_data: bool = False,
+        ckpt_path: Optional[str] = None,
+        **kwargs: Any,
+    ) -> TrainOutput:
+        transformation = self.create_transformation()
+
+        with env._let(max_idle_transforms=max(len(training_data), 100)):
+            transformed_training_data: Dataset = transformation.apply(
+                training_data, is_train=True
+            )
+            if cache_data:
+                transformed_training_data = Cached(transformed_training_data)
+
+            training_network = self.create_lightning_module()
+
+            training_data_loader = self.create_training_data_loader(
+                transformed_training_data,
+                training_network,
+                shuffle_buffer_length=shuffle_buffer_length,
+            )
+
+        validation_data_loader = None
+
+        if validation_data is not None:
+            with env._let(max_idle_transforms=max(len(validation_data), 100)):
+                transformed_validation_data: Dataset = transformation.apply(
+                    validation_data, is_train=True
+                )
+                if cache_data:
+                    transformed_validation_data = Cached(transformed_validation_data)
+
+                validation_data_loader = self.create_validation_data_loader(
+                    transformed_validation_data,
+                    training_network,
+                )
+
+        if from_predictor is not None:
+            training_network.load_state_dict(from_predictor.network.state_dict())
+
+        monitor = "train_loss" if validation_data is None else "val_loss"
+        checkpoint = pl.callbacks.ModelCheckpoint(
+            monitor=monitor, mode="min", verbose=True
+        )
+
+        custom_callbacks = self.trainer_kwargs.pop("callbacks", [])
+        trainer = pl.Trainer(
+            **{
+                "accelerator": "auto",
+                "callbacks": [checkpoint] + custom_callbacks,
+                **self.trainer_kwargs,
+            }
+        )
+
+        tuner = Tuner(trainer)
+
+        tuner.lr_find(
+            model=training_network,
+            train_dataloaders=training_data_loader,
+            val_dataloaders=validation_data_loader,
+            early_stop_threshold=50.0,
+        )
+
+        trainer.fit(
+            model=training_network,
+            train_dataloaders=training_data_loader,
+            val_dataloaders=validation_data_loader,
+            ckpt_path=ckpt_path,
+        )
+
+        if checkpoint.best_model_path != "":
+            logger.info(f"Loading best model from {checkpoint.best_model_path}")
+            best_model = training_network.__class__.load_from_checkpoint(
+                checkpoint.best_model_path
+            )
+        else:
+            best_model = training_network
+
+        return TrainOutput(
+            transformation=transformation,
+            trained_net=best_model,
+            trainer=trainer,
+            predictor=self.create_predictor(transformation, best_model),
         )
