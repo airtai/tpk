@@ -18,7 +18,7 @@ from gluonts.core.component import validated
 from gluonts.itertools import select
 from gluonts.torch.modules.loss import DistributionLoss, NegativeLogLikelihood
 from lightning.pytorch import LightningModule
-from torch.optim.lr_scheduler import ReduceLROnPlateau
+from torch.optim.lr_scheduler import OneCycleLR
 
 from .module import TSMixerModel
 
@@ -38,8 +38,6 @@ class TSMixerLightningModule(LightningModule):
     loss
         Loss function to be used for training,
         default: ``NegativeLogLikelihood()``.
-    lr
-        Learning rate, default: ``1e-3``.
     weight_decay
         Weight decay regularization parameter, default: ``1e-8``.
     patience
@@ -50,8 +48,9 @@ class TSMixerLightningModule(LightningModule):
     def __init__(
         self,
         model: TSMixerModel,
+        epochs: int,
+        steps_per_epoch: int,
         loss: Optional[DistributionLoss] = None,
-        lr: float = 1e-3,
         weight_decay: float = 1e-8,
         patience: int = 10,
     ) -> None:
@@ -59,9 +58,11 @@ class TSMixerLightningModule(LightningModule):
         self.loss = NegativeLogLikelihood() if loss is None else loss
         self.save_hyperparameters()
         self.model = model
-        self.lr = lr
         self.weight_decay = weight_decay
         self.patience = patience
+        self.epochs = epochs
+        self.steps_per_epoch = steps_per_epoch
+        self.lr = 0.0
         self.example_input_array = tuple(
             [
                 torch.zeros(shape, dtype=self.model.input_types()[name])
@@ -119,15 +120,18 @@ class TSMixerLightningModule(LightningModule):
             weight_decay=self.weight_decay,
         )
 
-        return {
+        optimizer_config: Dict[str, Any] = {
             "optimizer": optimizer,
-            "lr_scheduler": {
-                "scheduler": ReduceLROnPlateau(
-                    optimizer=optimizer,
-                    mode="min",
-                    factor=0.5,
-                    patience=self.patience,
-                ),
-                "monitor": "train_loss",
-            },
         }
+
+        if self.lr != 0.0:
+            optimizer_config["lr_scheduler"] = {
+                "scheduler": OneCycleLR(
+                    optimizer=optimizer,
+                    max_lr=self.lr,
+                    epochs=self.epochs,
+                    steps_per_epoch=self.steps_per_epoch,
+                ),
+            }
+
+        return optimizer_config
