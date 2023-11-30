@@ -3,7 +3,7 @@
 
 from typing import Any, Dict, List
 
-from temporal_data_kit.utils.dataset import download_datasets
+from tpk.utils.dataset import download_datasets
 
 
 def pytest_configure(config: Dict[str, Any]) -> None:

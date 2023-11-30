@@ -7,8 +7,8 @@ from gluonts.torch.distributions import NegativeBinomialOutput
 from gluonts.torch.model.forecast import DistributionForecast as PTDistributionForecast
 from tqdm import tqdm
 
-from temporal_data_kit.model.estimator import TSMixerEstimator
-from temporal_data_kit.testing.datasets.m5 import (
+from tpk.model.estimator import TSMixerEstimator
+from tpk.testing.datasets.m5 import (
     N_TS,
     PREDICTION_LENGTH,
     VAL_START,

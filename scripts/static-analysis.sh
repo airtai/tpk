@@ -2,10 +2,10 @@
 set -e
 
 echo "Running mypy..."
-mypy temporal_data_kit tests benchmarks
+mypy tpk tests benchmarks
 
 echo "Running bandit..."
-bandit -c pyproject.toml -r temporal_data_kit
+bandit -c pyproject.toml -r tpk
 
 echo "Running semgrep..."
 semgrep scan --config auto --error

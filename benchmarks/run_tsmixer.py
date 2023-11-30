@@ -13,7 +13,7 @@ from gluonts.torch.model.forecast import DistributionForecast as PTDistributionF
 from lightning.pytorch.callbacks.early_stopping import EarlyStopping
 from tqdm import tqdm
 
-from temporal_data_kit.testing.datasets.m5 import (
+from tpk.testing.datasets.m5 import (
     N_TS,
     PREDICTION_LENGTH,
     TEST_START,

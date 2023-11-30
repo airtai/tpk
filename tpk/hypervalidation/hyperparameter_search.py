@@ -74,7 +74,7 @@ def objective(
             "epochs": trial.suggest_int("num_epochs", 1, 150),
         }
 
-        cmd = "temporal_data_kit train-model"
+        cmd = "tpk train-model"
 
         for key, value in trial_values.items():
             cmd += f" --{key} {value}"

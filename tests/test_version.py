@@ -1,5 +1,5 @@
-import temporal_data_kit
+import tpk
 
 
 def test_version() -> None:
-    assert temporal_data_kit.__version__ is not None
+    assert tpk.__version__ is not None

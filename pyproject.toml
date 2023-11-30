@@ -3,8 +3,8 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "temporal-data-kit"
-description = "TempportalDataKit: toolset for timeseries data predictions"
+name = "tpk"
+description = "TempportalPredictionsKit: toolset for timeseries data predictions"
 readme = "README.md"
 authors = [
     { name = "airt", email = "info@airt.ai" },
@@ -99,22 +99,22 @@ testing = [
 ]
 
 dev = [
-    "temporal-data-kit[lint,testing,devdocs]",
+    "tpk[lint,testing,devdocs]",
     "pre-commit==3.5.0",
     "detect-secrets==1.4.0",
 ]
 
 [project.urls]
-Homepage = "https://temporal_data_kit.airt.ai/"
-Documentation = "https://temporal_data_kit.airt.ai/latest/getting-started/"
-Tracker = "https://github.com/airtai/temporal-data-kit/issues"
-Source = "https://github.com/airtai/temporal-data-kit"
+Homepage = "https://tpk.airt.ai/"
+Documentation = "https://tpk.airt.ai/latest/getting-started/"
+Tracker = "https://github.com/airtai/temporal-predictions-kit/issues"
+Source = "https://github.com/airtai/temporal-predictions-kit"
 
 [project.scripts]
-temporal_data_kit = "temporal_data_kit.cli:app"
+tpk = "tpk.cli:app"
 
 [tool.hatch.version]
-path = "temporal_data_kit/__about__.py"
+path = "tpk/__about__.py"
 
 [tool.hatch.build]
 skip-excluded-dirs = true
@@ -201,7 +201,7 @@ concurrency = [
 ]
 source = [
     "docs/docs_src",
-    "temporal_data_kit",
+    "tpk",
     "tests"
 ]
 context = '${CONTEXT}'

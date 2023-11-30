@@ -21,7 +21,7 @@ def train_model(
     disable_future_feat: bool = False,
     use_static_feat: bool = True,
 ) -> None:
-    from temporal_data_kit.hypervalidation import train_model as concrete_train_model
+    from tpk.hypervalidation import train_model as concrete_train_model
 
     validation_wrmsse = concrete_train_model(
         data_path=data_path,
@@ -47,7 +47,7 @@ def run_study(
     study_journal_path: str = "data/journal",
     data_path: str = "data/m5",
 ) -> None:
-    from temporal_data_kit.hypervalidation import run_study as concrete_run_study
+    from tpk.hypervalidation import run_study as concrete_run_study
 
     concrete_run_study(
         study_journal_path=Path(study_journal_path),
