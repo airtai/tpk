@@ -205,9 +205,9 @@ def update_contributing():
 
 @app.command()
 def build_api_docs():
-    """Build api docs for temporal_data_kit"""
+    """Build api docs for tpk"""
     typer.echo("Updating API docs")
-    create_api_docs(root_path=BASE_DIR, module="temporal_data_kit")
+    create_api_docs(root_path=BASE_DIR, module="tpk")
 
 
 def _build():

@@ -107,8 +107,8 @@ dev = [
 [project.urls]
 Homepage = "https://tpk.airt.ai/"
 Documentation = "https://tpk.airt.ai/latest/getting-started/"
-Tracker = "https://github.com/airtai/temporal-predictions-kit/issues"
-Source = "https://github.com/airtai/temporal-predictions-kit"
+Tracker = "https://github.com/airtai/tpk/issues"
+Source = "https://github.com/airtai/tpk"
 
 [project.scripts]
 tpk = "tpk.cli:app"
@@ -145,7 +145,7 @@ disallow_any_unimported = false
 
 [tool.isort]
 profile = "black"
-known_first_party = ["temporal_data_kit"]
+known_first_party = ["tpk"]
 
 [tool.black]
 line-length = 88

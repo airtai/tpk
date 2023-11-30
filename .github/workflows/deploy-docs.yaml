@@ -25,7 +25,7 @@ jobs:
           path: .cache
       - run: pip install -e ".[dev]"
       - run: ./scripts/build-docs.sh
-      - run: echo "VERSION=$(python3 -c 'from importlib.metadata import version; print(".".join(version("temporal_data_kit").split(".")[:2]))')" >> $GITHUB_ENV
+      - run: echo "VERSION=$(python3 -c 'from importlib.metadata import version; print(".".join(version("tpk").split(".")[:2]))')" >> $GITHUB_ENV
       - name: Configure Git user
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"

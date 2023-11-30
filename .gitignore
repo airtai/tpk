@@ -3,7 +3,7 @@ data/
 lightning_logs/
 result.csv
 
-temporal_data_kit.egg-info
+tpk.egg-info
 build
 
 __pycache__/
