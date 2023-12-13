@@ -7,7 +7,7 @@ tpk.egg-info
 build
 
 __pycache__/
-.env
+.env*
 .mypy_cache
 
 site/
