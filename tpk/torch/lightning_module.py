@@ -14,27 +14,26 @@
 from typing import Any, Dict, List, Optional
 
 import torch
+import torch.nn as nn
 from gluonts.core.component import validated
 from gluonts.itertools import select
 from gluonts.torch.modules.loss import DistributionLoss, NegativeLogLikelihood
 from lightning.pytorch import LightningModule
 from torch.optim.lr_scheduler import OneCycleLR
 
-from .module import TSMixerModel
 
-
-class TSMixerLightningModule(LightningModule):
+class MyLightningModule(LightningModule):
     """
     A ``pl.LightningModule`` class that can be used to train a
-    ``TSMixerModel`` with PyTorch Lightning.
+    ``nn.Module`` with PyTorch Lightning.
 
-    This is a thin layer around a (wrapped) ``TSMixerModel`` object,
+    This is a thin layer around a (wrapped) ``nn.Module`` object,
     that exposes the methods to evaluate training and validation loss.
 
     Parameters
     ----------
     model
-        ``TSMixerModel`` to be trained.
+        ``nn.Module`` to be trained.
     loss
         Loss function to be used for training,
         default: ``NegativeLogLikelihood()``.
@@ -47,7 +46,7 @@ class TSMixerLightningModule(LightningModule):
     @validated()  # type: ignore
     def __init__(
         self,
-        model: TSMixerModel,
+        model: nn.Module,
         epochs: int,
         steps_per_epoch: int,
         loss: Optional[DistributionLoss] = None,

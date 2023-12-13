@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Type, Union
 
 import numpy as np
 from gluonts.evaluation.backtest import make_evaluation_predictions
@@ -7,7 +7,6 @@ from gluonts.torch.distributions import NegativeBinomialOutput
 from gluonts.torch.model.forecast import DistributionForecast as PTDistributionForecast
 from tqdm import tqdm
 
-from tpk.model.estimator import TSMixerEstimator
 from tpk.testing.datasets.m5 import (
     N_TS,
     PREDICTION_LENGTH,
@@ -15,6 +14,7 @@ from tpk.testing.datasets.m5 import (
     evaluate_wrmsse,
     load_datasets,
 )
+from tpk.torch import MyEstimator, TPKModel, TSMixerModel
 
 
 def evaluate(
@@ -41,6 +41,8 @@ def evaluate(
 
 
 def train_model(
+    *,
+    model_cls: Type[Union[TPKModel, TSMixerModel]],
     data_path: str,
     batch_size: int,
     epochs: int,
@@ -53,7 +55,8 @@ def train_model(
     use_static_feat: bool,
 ) -> float:
     train_ds, val_ds, _, stat_cat_cardinalities = load_datasets(data_path)
-    estimator = TSMixerEstimator(
+    estimator = MyEstimator(
+        model_cls=model_cls,
         prediction_length=PREDICTION_LENGTH,
         context_length=context_length,
         epochs=epochs,

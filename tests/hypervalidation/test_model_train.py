@@ -1,11 +1,13 @@
 import pytest
 
 from tpk.hypervalidation import train_model
+from tpk.torch import TSMixerModel
 
 
 @pytest.mark.slow
 def test_train_model() -> None:
     wrmsse = train_model(
+        model_cls=TSMixerModel,
         data_path="data/m5",
         batch_size=64,
         epochs=1,
