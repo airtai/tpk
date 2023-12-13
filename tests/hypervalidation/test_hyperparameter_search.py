@@ -8,6 +8,7 @@ from tpk.hypervalidation.hyperparameter_search import (
     run_model_cmd_parallel,
     run_study,
 )
+from tpk.torch import TSMixerModel
 
 
 @pytest.mark.asyncio
@@ -29,6 +30,7 @@ def test_run_study() -> None:
         study_journal_path = Path(dir)
 
         run_study(
+            model_cls=TSMixerModel,
             study_journal_path=study_journal_path,
             data_path=Path("data/m5"),
             study_name="test_study",

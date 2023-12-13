@@ -13,3 +13,5 @@ __pycache__/
 site/
 site_build/
 .vscode/
+.coverage.*
+.lr_find_*

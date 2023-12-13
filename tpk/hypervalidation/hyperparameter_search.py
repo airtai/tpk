@@ -1,7 +1,7 @@
 import asyncio
 import shlex
 from pathlib import Path
-from typing import Any, Callable, List, Optional, Sequence, Union
+from typing import Any, Callable, List, Literal, Optional, Sequence, Union
 
 import asyncer
 import numpy as np
@@ -50,17 +50,22 @@ async def run_model_cmd_parallel(model_cmd: str, num_executions: int) -> List[fl
 
 
 def objective(
+    *,
+    model_cls: Literal["tpk", "tsmixer"],
     data_path: str,
     tests_per_trial: int,
 ) -> Callable[[optuna.Trial], Union[float, Sequence[float]]]:
     def _inner(
         trial: Any,
+        *,
+        model_cls: Literal["tpk", "tsmixer"] = model_cls,
         data_path: str = data_path,
         tests_per_trial: int = tests_per_trial,
         batch_size: int = 64,
         epochs: int = 1,
     ) -> float:
         trial_values = {
+            "model_cls": model_cls,
             "data-path": data_path,
             "context-length": trial.suggest_categorical("context_length", [20, 35, 50]),
             "n-block": trial.suggest_int("n_block", 1, 5),
@@ -94,6 +99,8 @@ def objective(
 
 
 def run_study(
+    *,
+    model_cls: Literal["tpk", "tsmixer"],
     study_journal_path: Path,
     study_name: str,
     data_path: Path,
@@ -113,7 +120,11 @@ def run_study(
         study_name=study_name,
     )
     study.optimize(
-        objective(str(data_path), tests_per_trial),
+        objective(
+            model_cls=model_cls,
+            data_path=str(data_path),
+            tests_per_trial=tests_per_trial,
+        ),
         n_trials=n_trials,
         catch=(ValueError,),
     )  # Model diverging with ValueError, catch and go to next trial

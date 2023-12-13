@@ -2,14 +2,29 @@ __all__ = ["app", "hello", "run_study"]
 
 
 from pathlib import Path
+from typing import Literal, Type, Union
 
 import typer
+
+from .torch import TPKModel, TSMixerModel
 
 app = typer.Typer()
 
 
+def get_model_cls(
+    model_str: Literal["tpk", "tsmixer"]
+) -> Type[Union[TPKModel, TSMixerModel]]:
+    if model_str == "tpk":
+        return TPKModel  # type: ignore[no-any-return]
+    elif model_str == "tsmixer":
+        return TSMixerModel  # type: ignore[no-any-return]
+    else:
+        raise ValueError(f"Unknown model: {model_str}")
+
+
 @app.command()
 def train_model(
+    model_cls: Literal["tpk", "tsmixer"],
     data_path: str = "data/m5",
     batch_size: int = 64,
     epochs: int = 300,
@@ -24,6 +39,7 @@ def train_model(
     from tpk.hypervalidation import train_model as concrete_train_model
 
     validation_wrmsse = concrete_train_model(
+        model_cls=get_model_cls(model_cls),
         data_path=data_path,
         batch_size=batch_size,
         epochs=epochs,
@@ -41,6 +57,7 @@ def train_model(
 
 @app.command()
 def run_study(
+    model_cls: Literal["tpk", "tsmixer"],
     study_name: str,
     n_trials: int,
     tests_per_trial: int = 5,
@@ -50,6 +67,7 @@ def run_study(
     from tpk.hypervalidation import run_study as concrete_run_study
 
     concrete_run_study(
+        model_cls=model_cls,
         study_journal_path=Path(study_journal_path),
         data_path=Path(data_path),
         study_name=study_name,

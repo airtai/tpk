@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Dict, Iterator, List, Optional
+from typing import Any, Dict, Iterator, List, Optional, Type
 
 import lightning.pytorch as pl
 import torch
@@ -42,8 +42,7 @@ from lightning import LightningModule
 from lightning.pytorch.tuner.tuning import Tuner
 from torch.utils.data import DataLoader
 
-from .lightning_module import TSMixerLightningModule
-from .module import TSMixerModel
+from .lightning_module import MyLightningModule
 
 logger = logging.getLogger(__name__)
 
@@ -70,12 +69,12 @@ class IterableDataset(torch.utils.data.IterableDataset):  # type: ignore
         yield from self.iterable
 
 
-class TSMixerEstimator(PyTorchLightningEstimator):  # type: ignore
+class MyEstimator(PyTorchLightningEstimator):  # type: ignore
     """
-    Estimator class to train a TSMixer model.
+    Estimator class to train a TPK model.
 
-    This class is uses the model defined in ``TSMixerModel``, and wraps it
-    into a ``TSMixerLightningModule`` for training purposes: training is
+    This class is uses the model defined in ``TPKModel``, and wraps it
+    into a ``MyLightningModule`` for training purposes: training is
     performed using PyTorch Lightning's ``pl.Trainer`` class.
 
     Parameters
@@ -88,7 +87,7 @@ class TSMixerEstimator(PyTorchLightningEstimator):  # type: ignore
         Number of steps to unroll the RNN for before computing predictions
         (default: None, in which case context_length = prediction_length).
     n_block
-        Number of TSMixer blocks (default: 2).
+        Number of TPK blocks (default: 2).
     hidden_size
         Number of hidden size for each layer (default: 128).
     weight_decay
@@ -137,6 +136,8 @@ class TSMixerEstimator(PyTorchLightningEstimator):  # type: ignore
     @validated()  # type: ignore
     def __init__(
         self,
+        *,
+        model_cls: Type[LightningModule],
         freq: str,
         prediction_length: int,
         epochs: int,
@@ -170,6 +171,7 @@ class TSMixerEstimator(PyTorchLightningEstimator):  # type: ignore
             default_trainer_kwargs.update(trainer_kwargs)
         super().__init__(trainer_kwargs=default_trainer_kwargs)
 
+        self.model_cls = model_cls
         self.epochs = epochs
         self.freq = freq
         self.context_length = (
@@ -347,7 +349,7 @@ class TSMixerEstimator(PyTorchLightningEstimator):  # type: ignore
         )
 
     def create_lightning_module(self) -> LightningModule:
-        model = TSMixerModel(
+        model = self.model_cls(
             freq=self.freq,
             context_length=self.context_length,
             prediction_length=self.prediction_length,
@@ -371,7 +373,7 @@ class TSMixerEstimator(PyTorchLightningEstimator):  # type: ignore
             scaling=self.scaling,
         )
 
-        return TSMixerLightningModule(  # type: ignore
+        return MyLightningModule(  # type: ignore
             model=model,
             loss=self.loss,
             weight_decay=self.weight_decay,
