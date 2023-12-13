@@ -86,7 +86,7 @@ lint = [
     "isort>=5",
     "ruff==0.1.7",
     "pyupgrade-directories",
-    "bandit==1.7.5",
+    "bandit==1.7.6",
     "semgrep==1.50.0",
 ]
 
