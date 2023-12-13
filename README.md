@@ -73,13 +73,14 @@ series of monthly passenger numbers between 1949 and 1960. We train the model
 on the first nine years and make predictions for the remaining three years.
 
 ```py
+
 import pandas as pd
 import matplotlib.pyplot as plt
 
 from gluonts.dataset.pandas import PandasDataset
 from gluonts.dataset.split import split
 from gluonts.torch import DeepAREstimator
-from tpk.torch import TPKEstimator
+from tpk.torch import MyEstimator, TPKModel
 
 # Load data from a CSV file into a PandasDataset
 df = pd.read_csv(
@@ -95,8 +96,11 @@ training_data, test_gen = split(dataset, offset=-36)
 test_data = test_gen.generate_instances(prediction_length=12, windows=3)
 
 # Train the model and make predictions
-model = TPKEstimator(
-    prediction_length=12, freq="M", trainer_kwargs={"max_epochs": 5}
+model = MyEstimator(
+    model_cls=TPKModel,
+    prediction_length=12,
+    freq="M",
+    trainer_kwargs={"max_epochs": 5},
 ).train(training_data)
 
 forecasts = list(model.predict(test_data.input))
