@@ -1,21 +1,339 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
     <url>
-        <loc>https://temporal-data-kit.airt.ai/SUMMARY/</loc>
-        <lastmod>2023-11-15</lastmod>
+        <loc>https://tpk.airt.ai/SUMMARY/</loc>
+        <lastmod>2023-12-14</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://temporal-data-kit.airt.ai/SUMMARY/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/SUMMARY/"/>
     </url>
     <url>
-        <loc>https://temporal-data-kit.airt.ai/</loc>
-        <lastmod>2023-11-15</lastmod>
+        <loc>https://tpk.airt.ai/</loc>
+        <lastmod>2023-12-14</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://temporal-data-kit.airt.ai/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/"/>
     </url>
     <url>
-        <loc>https://temporal-data-kit.airt.ai/release/</loc>
-        <lastmod>2023-11-15</lastmod>
+        <loc>https://tpk.airt.ai/release/</loc>
+        <lastmod>2023-12-14</lastmod>
         <changefreq>daily</changefreq>
-        <xhtml:link rel="alternate" hreflang="en" href="https://temporal-data-kit.airt.ai/release/"/>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/release/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/MyEstimator/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/MyEstimator/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/TPKModel/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/TPKModel/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/TSMixerModel/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/TSMixerModel/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/cli/get_model_cls/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/cli/get_model_cls/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/cli/hello/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/cli/hello/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/cli/run_study/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/cli/run_study/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/cli/train_model/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/cli/train_model/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/hypervalidation/run_study/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/hypervalidation/run_study/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/hypervalidation/train_model/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/hypervalidation/train_model/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/hypervalidation/hyperparameter_search/objective/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/hypervalidation/hyperparameter_search/objective/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/hypervalidation/hyperparameter_search/run_model_cmd_parallel/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/hypervalidation/hyperparameter_search/run_model_cmd_parallel/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/hypervalidation/hyperparameter_search/run_study/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/hypervalidation/hyperparameter_search/run_study/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/hypervalidation/model_train/evaluate/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/hypervalidation/model_train/evaluate/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/hypervalidation/model_train/train_model/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/hypervalidation/model_train/train_model/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/testing/datasets/m5/evaluate_wrmsse/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/testing/datasets/m5/evaluate_wrmsse/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/testing/datasets/m5/load_datasets/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/testing/datasets/m5/load_datasets/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/testing/datasets/m5/accuracy_evaluator/calculate_and_save_data/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/testing/datasets/m5/accuracy_evaluator/calculate_and_save_data/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/testing/datasets/m5/accuracy_evaluator/evaluate_wrmsse/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/testing/datasets/m5/accuracy_evaluator/evaluate_wrmsse/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/testing/datasets/m5/accuracy_evaluator/get_s/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/testing/datasets/m5/accuracy_evaluator/get_s/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/testing/datasets/m5/accuracy_evaluator/get_w/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/testing/datasets/m5/accuracy_evaluator/get_w/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/testing/datasets/m5/accuracy_evaluator/load_precalculated_data/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/testing/datasets/m5/accuracy_evaluator/load_precalculated_data/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/testing/datasets/m5/accuracy_evaluator/reduce_mem_usage/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/testing/datasets/m5/accuracy_evaluator/reduce_mem_usage/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/testing/datasets/m5/accuracy_evaluator/rollup/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/testing/datasets/m5/accuracy_evaluator/rollup/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/testing/datasets/m5/accuracy_evaluator/wrmsse/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/testing/datasets/m5/accuracy_evaluator/wrmsse/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/testing/datasets/m5/load_dataset/convert_price_file/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/testing/datasets/m5/load_dataset/convert_price_file/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/testing/datasets/m5/load_dataset/load_datasets/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/testing/datasets/m5/load_dataset/load_datasets/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/torch/MyEstimator/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/torch/MyEstimator/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/torch/TPKModel/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/torch/TPKModel/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/torch/TSMixerModel/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/torch/TSMixerModel/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/torch/estimator/IterableDataset/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/torch/estimator/IterableDataset/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/torch/estimator/MyEstimator/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/torch/estimator/MyEstimator/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/torch/lightning_module/MyLightningModule/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/torch/lightning_module/MyLightningModule/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/torch/tpk/TPKModel/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/torch/tpk/TPKModel/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/torch/tpk/module/ConditionalFeaturalResBlock/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/torch/tpk/module/ConditionalFeaturalResBlock/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/torch/tpk/module/ConditionalMixerBlock/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/torch/tpk/module/ConditionalMixerBlock/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/torch/tpk/module/FeaturalResBlock/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/torch/tpk/module/FeaturalResBlock/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/torch/tpk/module/MixerBlock/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/torch/tpk/module/MixerBlock/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/torch/tpk/module/TPKEncoder/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/torch/tpk/module/TPKEncoder/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/torch/tpk/module/TPKModel/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/torch/tpk/module/TPKModel/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/torch/tpk/module/TemporalLinear/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/torch/tpk/module/TemporalLinear/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/torch/tpk/module/TemporalResBlock/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/torch/tpk/module/TemporalResBlock/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/torch/tsmixer/TSMixerModel/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/torch/tsmixer/TSMixerModel/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/torch/tsmixer/module/ConditionalFeaturalResBlock/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/torch/tsmixer/module/ConditionalFeaturalResBlock/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/torch/tsmixer/module/ConditionalMixerBlock/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/torch/tsmixer/module/ConditionalMixerBlock/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/torch/tsmixer/module/FeaturalResBlock/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/torch/tsmixer/module/FeaturalResBlock/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/torch/tsmixer/module/MixerBlock/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/torch/tsmixer/module/MixerBlock/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/torch/tsmixer/module/TSMixerEncoder/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/torch/tsmixer/module/TSMixerEncoder/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/torch/tsmixer/module/TSMixerModel/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/torch/tsmixer/module/TSMixerModel/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/torch/tsmixer/module/TemporalLinear/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/torch/tsmixer/module/TemporalLinear/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/torch/tsmixer/module/TemporalResBlock/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/torch/tsmixer/module/TemporalResBlock/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/utils/dataset/DownloadProgressBar/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/utils/dataset/DownloadProgressBar/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/utils/dataset/download_datasets/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/utils/dataset/download_datasets/"/>
+    </url>
+    <url>
+        <loc>https://tpk.airt.ai/api/tpk/utils/dataset/download_url/</loc>
+        <lastmod>2023-12-14</lastmod>
+        <changefreq>daily</changefreq>
+        <xhtml:link rel="alternate" hreflang="en" href="https://tpk.airt.ai/api/tpk/utils/dataset/download_url/"/>
     </url>
 </urlset>
