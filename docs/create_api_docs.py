@@ -1,4 +1,5 @@
 import itertools
+import shutil
 from importlib import import_module
 from inspect import getmembers, isclass, isfunction
 from pathlib import Path
@@ -234,7 +235,10 @@ def _generate_api_docs_for_module(root_path: str, module_name: str) -> str:
     members_with_submodules = _add_all_submodules(members)
     api_summary = _get_api_summary(members_with_submodules)
 
-    _generate_api_docs(members_with_submodules, Path(root_path) / "docs" / "en" / "api")
+    api_path = Path(root_path) / "docs" / "en" / "api"
+    shutil.rmtree(api_path, ignore_errors=True)
+    api_path.mkdir(parents=True)
+    _generate_api_docs(members_with_submodules, api_path)
 
     members_with_submodules = _get_submodule_members(module_name)
     symbols = _load_submodules(module_name, members_with_submodules)
