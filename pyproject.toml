@@ -95,12 +95,13 @@ testing = [
     "pytest==7.4.3,<8",
     "pytest-asyncio>=0.21.0",
     "pytest-asyncio>=0.21",
-    "dirty-equals==0.7.1",
+    "dirty-equals==0.7.1post0",
 ]
 
 dev = [
     "tpk[lint,testing,devdocs]",
-    "pre-commit==3.5.0",
+    "pre-commit==3.5.0; python_version < '3.9'",
+    "pre-commit==3.6.0; python_version >= '3.9'",
     "detect-secrets==1.4.0",
 ]
 
