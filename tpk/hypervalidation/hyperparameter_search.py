@@ -65,14 +65,14 @@ def objective(
         epochs: int = 1,
     ) -> float:
         trial_values = {
-            "model_cls": model_cls,
+            "model-cls": model_cls,
             "data-path": data_path,
             "context-length": trial.suggest_categorical("context_length", [20, 35, 50]),
             "n-block": trial.suggest_int("n_block", 1, 5),
             "hidden-size": trial.suggest_categorical(
                 "hidden_size", [64, 128, 256, 512]
             ),
-            "lr": trial.suggest_float("learning_rate", 0.0001, 0.5, log=True),
+            # "lr": trial.suggest_float("learning_rate", 0.0001, 0.5, log=True),
             "weight-decay": trial.suggest_float("weight_decay", 0.0001, 0.5, log=True),
             "dropout-rate": trial.suggest_float("dropout_rate", 0.0001, 0.5, log=True),
             "batch-size": batch_size,
