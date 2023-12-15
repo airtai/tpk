@@ -1,10 +1,12 @@
-__all__ = ["app", "hello", "run_study"]
+__all__ = ["app", "run_study"]
 
 
+from datetime import datetime
 from pathlib import Path
-from typing import Literal, Type, Union
+from typing import Literal, Optional, Type, Union
 
 import typer
+from typing_extensions import Annotated
 
 from .torch import TPKModel, TSMixerModel
 
@@ -24,22 +26,31 @@ def get_model_cls(
 
 @app.command()
 def train_model(
-    model_cls: Literal["tpk", "tsmixer"],
-    data_path: str = "data/m5",
-    batch_size: int = 64,
-    epochs: int = 300,
-    context_length: int = 30,
-    n_block: int = 2,
-    hidden_size: int = 256,
-    weight_decay: float = 0.0001,
-    dropout_rate: float = 0.0001,
-    disable_future_feat: bool = False,
-    use_static_feat: bool = True,
+    model_cls: Annotated[
+        str,
+        typer.Option(help="Class of the model to be trained, can be: tsmixer or tpk"),
+    ] = "tsmixer",
+    data_path: Annotated[str, typer.Option(help="Path to the dataset")] = "data/m5",
+    batch_size: Annotated[int, typer.Option(help="Batch size for model training")] = 64,
+    epochs: Annotated[
+        int, typer.Option(help="Number of epochs to run the model training")
+    ] = 300,
+    context_length: Annotated[
+        int, typer.Option(help="Context length of the model")
+    ] = 30,
+    n_block: Annotated[int, typer.Option(help="Number of model hidden blocks")] = 2,
+    hidden_size: Annotated[int, typer.Option(help="Size of hidden layers")] = 256,
+    weight_decay: Annotated[float, typer.Option(help="Model weight decay")] = 0.0001,
+    dropout_rate: Annotated[float, typer.Option(help="Model dropout rate")] = 0.0001,
+    disable_future_feat: Annotated[
+        bool, typer.Option(help="Disable future features")
+    ] = False,
+    use_static_feat: Annotated[bool, typer.Option(help="Use static features")] = True,
 ) -> None:
     from tpk.hypervalidation import train_model as concrete_train_model
 
     validation_wrmsse = concrete_train_model(
-        model_cls=get_model_cls(model_cls),
+        model_cls=get_model_cls(model_cls),  # type: ignore
         data_path=data_path,
         batch_size=batch_size,
         epochs=epochs,
@@ -57,25 +68,32 @@ def train_model(
 
 @app.command()
 def run_study(
-    model_cls: Literal["tpk", "tsmixer"],
-    study_name: str,
-    n_trials: int,
-    tests_per_trial: int = 5,
-    study_journal_path: str = "data/journal",
-    data_path: str = "data/m5",
+    model_cls: Annotated[
+        str,
+        typer.Option(help="Class of the model to be trained, can be: tsmixer or tpk"),
+    ] = "tsmixer",
+    study_name: Annotated[Optional[str], typer.Option(help="Name of the study")] = None,
+    n_trials: Annotated[
+        int, typer.Option(help="Number of trial to run in the study")
+    ] = 100,
+    tests_per_trial: Annotated[
+        int, typer.Option(help="Number of test models to run per trial")
+    ] = 5,
+    study_journal_path: Annotated[
+        str, typer.Option(help="Path to study journal")
+    ] = "data/journal",
+    data_path: Annotated[str, typer.Option(help="Path to the dataset")] = "data/m5",
 ) -> None:
     from tpk.hypervalidation import run_study as concrete_run_study
 
+    if study_name is None:
+        study_name = f"{model_cls}_{datetime.now().isoformat()}_study"
+
     concrete_run_study(
-        model_cls=model_cls,
+        model_cls=model_cls,  # type: ignore
         study_journal_path=Path(study_journal_path),
         data_path=Path(data_path),
         study_name=study_name,
         n_trials=n_trials,
         tests_per_trial=tests_per_trial,
     )
-
-
-@app.command()
-def hello() -> None:
-    print("Hi from temporal predictions kit")
