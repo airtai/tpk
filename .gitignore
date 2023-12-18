@@ -15,3 +15,4 @@ site_build/
 .vscode/
 .coverage.*
 .lr_find_*
+nohup.out
