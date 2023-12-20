@@ -163,6 +163,7 @@ class MyEstimator(PyTorchLightningEstimator):  # type: ignore
         trainer_kwargs: Optional[Dict[str, Any]] = None,
         train_sampler: Optional[InstanceSampler] = None,
         validation_sampler: Optional[InstanceSampler] = None,
+        use_one_cycle: bool = False,
     ) -> None:
         default_trainer_kwargs = {
             "max_epochs": 100,
@@ -175,6 +176,7 @@ class MyEstimator(PyTorchLightningEstimator):  # type: ignore
         self.model_cls = model_cls
         self.lr = lr
         self.epochs = epochs
+        self.use_one_cycle = use_one_cycle
         self.freq = freq
         self.context_length = (
             context_length if context_length is not None else prediction_length
@@ -382,6 +384,7 @@ class MyEstimator(PyTorchLightningEstimator):  # type: ignore
             lr=self.lr,
             epochs=self.epochs,
             steps_per_epoch=self.num_batches_per_epoch,
+            use_one_cycle=self.use_one_cycle,
         )
 
     def create_predictor(

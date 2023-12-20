@@ -19,6 +19,7 @@ from gluonts.core.component import validated
 from gluonts.itertools import select
 from gluonts.torch.modules.loss import DistributionLoss, NegativeLogLikelihood
 from lightning.pytorch import LightningModule
+from torch.optim.lr_scheduler import OneCycleLR
 
 
 class MyLightningModule(LightningModule):
@@ -52,6 +53,7 @@ class MyLightningModule(LightningModule):
         weight_decay: float = 1e-8,
         lr: float = 0.0,
         patience: int = 10,
+        use_one_cycle: bool = False,
     ) -> None:
         super().__init__()
         self.loss = NegativeLogLikelihood() if loss is None else loss
@@ -62,6 +64,7 @@ class MyLightningModule(LightningModule):
         self.epochs = epochs
         self.steps_per_epoch = steps_per_epoch
         self.lr = lr
+        self.use_one_cycle = use_one_cycle
         self.example_input_array = tuple(
             [
                 torch.zeros(shape, dtype=self.model.input_types()[name])
@@ -123,14 +126,14 @@ class MyLightningModule(LightningModule):
             "optimizer": optimizer,
         }
 
-        # if self.lr != 0.0:
-        #     optimizer_config["lr_scheduler"] = {
-        #         "scheduler": OneCycleLR(
-        #             optimizer=optimizer,
-        #             max_lr=self.lr,
-        #             epochs=self.epochs,
-        #             steps_per_epoch=self.steps_per_epoch,
-        #         ),
-        #     }
+        if self.use_one_cycle:
+            optimizer_config["lr_scheduler"] = {
+                "scheduler": OneCycleLR(
+                    optimizer=optimizer,
+                    max_lr=self.lr,
+                    epochs=self.epochs,
+                    steps_per_epoch=self.steps_per_epoch,
+                ),
+            }
 
         return optimizer_config

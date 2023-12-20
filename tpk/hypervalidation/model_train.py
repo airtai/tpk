@@ -80,6 +80,7 @@ def train_model(
             "max_epochs": epochs,
             "callbacks": [],
         },
+        use_one_cycle=True,
     )
 
     predictor = estimator.train(train_ds, validation_data=val_ds, num_workers=32)
