@@ -39,7 +39,6 @@ from gluonts.transform import (
 )
 from gluonts.transform.sampler import InstanceSampler
 from lightning import LightningModule
-from lightning.pytorch.tuner.tuning import Tuner
 from torch.utils.data import DataLoader
 
 from .lightning_module import MyLightningModule
@@ -147,6 +146,7 @@ class MyEstimator(PyTorchLightningEstimator):  # type: ignore
         weight_decay: float = 1e-8,
         dropout_rate: float = 0.1,
         patience: int = 10,
+        lr: float = 0.0,
         num_feat_dynamic_real: int = 0,
         disable_future_feature: bool = False,
         num_feat_static_cat: int = 0,
@@ -172,6 +172,7 @@ class MyEstimator(PyTorchLightningEstimator):  # type: ignore
         super().__init__(trainer_kwargs=default_trainer_kwargs)
 
         self.model_cls = model_cls
+        self.lr = lr
         self.epochs = epochs
         self.freq = freq
         self.context_length = (
@@ -378,6 +379,7 @@ class MyEstimator(PyTorchLightningEstimator):  # type: ignore
             loss=self.loss,
             weight_decay=self.weight_decay,
             patience=self.patience,
+            lr=self.lr,
             epochs=self.epochs,
             steps_per_epoch=self.num_batches_per_epoch,
         )
@@ -458,14 +460,14 @@ class MyEstimator(PyTorchLightningEstimator):  # type: ignore
             }
         )
 
-        tuner = Tuner(trainer)
+        # tuner = Tuner(trainer)
 
-        tuner.lr_find(
-            model=training_network,
-            train_dataloaders=training_data_loader,
-            val_dataloaders=validation_data_loader,
-            early_stop_threshold=50.0,
-        )
+        # tuner.lr_find(
+        #     model=training_network,
+        #     train_dataloaders=training_data_loader,
+        #     val_dataloaders=validation_data_loader,
+        #     early_stop_threshold=50.0,
+        # )
 
         trainer.fit(
             model=training_network,

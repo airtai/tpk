@@ -72,7 +72,7 @@ def objective(
             "hidden-size": trial.suggest_categorical(
                 "hidden_size", [64, 128, 256, 512]
             ),
-            # "lr": trial.suggest_float("learning_rate", 0.0001, 0.5, log=True),
+            "lr": trial.suggest_float("learning_rate", 0.0001, 0.5, log=True),
             "weight-decay": trial.suggest_float("weight_decay", 0.0001, 0.5, log=True),
             "dropout-rate": trial.suggest_float("dropout_rate", 0.0001, 0.5, log=True),
             "batch-size": batch_size,

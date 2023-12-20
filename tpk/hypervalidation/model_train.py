@@ -53,6 +53,7 @@ def train_model(
     dropout_rate: float,
     disable_future_feature: bool,
     use_static_feat: bool,
+    lr: float,
 ) -> float:
     train_ds, val_ds, _, stat_cat_cardinalities = load_datasets(data_path)
     estimator = MyEstimator(
@@ -69,6 +70,7 @@ def train_model(
         num_feat_static_cat=5 if use_static_feat else 0,
         cardinality=stat_cat_cardinalities,
         batch_size=batch_size,
+        lr=lr,
         freq="D",
         distr_output=NegativeBinomialOutput(),
         num_batches_per_epoch=(N_TS // batch_size + 1),

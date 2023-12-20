@@ -41,6 +41,7 @@ def train_model(
     n_block: Annotated[int, typer.Option(help="Number of model hidden blocks")] = 2,
     hidden_size: Annotated[int, typer.Option(help="Size of hidden layers")] = 256,
     weight_decay: Annotated[float, typer.Option(help="Model weight decay")] = 0.0001,
+    lr: Annotated[float, typer.Option(help="Model learning rate")] = 0.0001,
     dropout_rate: Annotated[float, typer.Option(help="Model dropout rate")] = 0.0001,
     disable_future_feat: Annotated[
         bool, typer.Option(help="Disable future features")
@@ -61,6 +62,7 @@ def train_model(
         dropout_rate=dropout_rate,
         disable_future_feature=disable_future_feat,
         use_static_feat=use_static_feat,
+        lr=lr,
     )
 
     typer.echo(validation_wrmsse)
