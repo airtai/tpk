@@ -39,6 +39,7 @@ from gluonts.transform import (
 )
 from gluonts.transform.sampler import InstanceSampler
 from lightning import LightningModule
+from lightning.pytorch.tuner.tuning import Tuner
 from torch.utils.data import DataLoader
 
 from .lightning_module import MyLightningModule
@@ -358,7 +359,6 @@ class MyEstimator(PyTorchLightningEstimator):  # type: ignore
                 self.num_feat_dynamic_real + len(self.time_features)
             ),
             num_future_feat=(
-                # len(self.time_features)
                 0
                 if self.disable_future_feature
                 else self.num_feat_dynamic_real + len(self.time_features)
@@ -460,15 +460,6 @@ class MyEstimator(PyTorchLightningEstimator):  # type: ignore
             }
         )
 
-        # tuner = Tuner(trainer)
-
-        # tuner.lr_find(
-        #     model=training_network,
-        #     train_dataloaders=training_data_loader,
-        #     val_dataloaders=validation_data_loader,
-        #     early_stop_threshold=50.0,
-        # )
-
         trainer.fit(
             model=training_network,
             train_dataloaders=training_data_loader,
@@ -490,3 +481,63 @@ class MyEstimator(PyTorchLightningEstimator):  # type: ignore
             trainer=trainer,
             predictor=self.create_predictor(transformation, best_model),
         )
+
+    def find_lr(
+        self,
+        training_data: Dataset,
+        validation_data: Optional[Dataset] = None,
+        from_predictor: Optional[PyTorchPredictor] = None,
+        shuffle_buffer_length: Optional[int] = None,
+        cache_data: bool = False,
+        ckpt_path: Optional[str] = None,
+        **kwargs: Any,
+    ) -> TrainOutput:
+        transformation = self.create_transformation()
+
+        with env._let(max_idle_transforms=max(len(training_data), 100)):
+            transformed_training_data: Dataset = transformation.apply(
+                training_data, is_train=True
+            )
+            if cache_data:
+                transformed_training_data = Cached(transformed_training_data)
+
+            training_network = self.create_lightning_module()
+
+            training_data_loader = self.create_training_data_loader(
+                transformed_training_data,
+                training_network,
+                shuffle_buffer_length=shuffle_buffer_length,
+            )
+
+        validation_data_loader = None
+
+        if validation_data is not None:
+            with env._let(max_idle_transforms=max(len(validation_data), 100)):
+                transformed_validation_data: Dataset = transformation.apply(
+                    validation_data, is_train=True
+                )
+                if cache_data:
+                    transformed_validation_data = Cached(transformed_validation_data)
+
+                validation_data_loader = self.create_validation_data_loader(
+                    transformed_validation_data,
+                    training_network,
+                )
+
+        trainer = pl.Trainer(
+            **{
+                "accelerator": "auto",
+                **self.trainer_kwargs,
+            }
+        )
+
+        tuner = Tuner(trainer)
+
+        tuner.lr_find(
+            model=training_network,
+            train_dataloaders=training_data_loader,
+            val_dataloaders=validation_data_loader,
+            early_stop_threshold=50.0,
+        )
+
+        return training_network.lr

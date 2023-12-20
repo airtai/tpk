@@ -16,6 +16,7 @@ async def run_model_cmd_parallel(model_cmd: str, num_executions: int) -> List[fl
             tasks.append(
                 tg.soonify(asyncio.create_subprocess_exec)(
                     *shlex.split(model_cmd),
+                    limit=1024 * 1024,
                     stdout=asyncio.subprocess.PIPE,
                     stdin=asyncio.subprocess.PIPE,
                 )
@@ -72,12 +73,27 @@ def objective(
             "hidden-size": trial.suggest_categorical(
                 "hidden_size", [64, 128, 256, 512]
             ),
-            "lr": trial.suggest_float("learning_rate", 0.0001, 0.5, log=True),
             "weight-decay": trial.suggest_float("weight_decay", 0.0001, 0.5, log=True),
             "dropout-rate": trial.suggest_float("dropout_rate", 0.0001, 0.5, log=True),
             "batch-size": batch_size,
-            "epochs": trial.suggest_int("num_epochs", 1, 150),
+            "epochs": 300,  # trial.suggest_int("num_epochs", 1, 150),
         }
+
+        cmd = "tpk find-lr"
+
+        for key, value in trial_values.items():
+            cmd += f" --{key} {value}"
+
+        typer.echo(f"Running LR-find trial with cmd: {cmd}")
+
+        lr = asyncio.run(
+            run_model_cmd_parallel(
+                model_cmd=cmd,
+                num_executions=1,
+            )
+        )[0]
+
+        trial_values["lr"] = lr
 
         cmd = "tpk train-model"
 
