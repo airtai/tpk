@@ -63,7 +63,6 @@ def objective(
         data_path: str = data_path,
         tests_per_trial: int = tests_per_trial,
         batch_size: int = 64,
-        epochs: int = 1,
     ) -> float:
         trial_values = {
             "model-cls": model_cls,
@@ -76,7 +75,7 @@ def objective(
             "weight-decay": trial.suggest_float("weight_decay", 0.0001, 0.5, log=True),
             "dropout-rate": trial.suggest_float("dropout_rate", 0.0001, 0.5, log=True),
             "batch-size": batch_size,
-            "epochs": 300,  # trial.suggest_int("num_epochs", 1, 150),
+            "epochs": trial.suggest_int("num_epochs", 5, 50),
         }
 
         cmd = "tpk find-lr"
