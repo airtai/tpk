@@ -80,7 +80,6 @@ def objective(
             "dropout-rate": trial.suggest_float("dropout_rate", 0.0001, 0.5, log=True),
             "batch-size": batch_size,
             "epochs": trial.suggest_int("num_epochs", 5, 50),
-            "use-one-cycle": use_one_cycle,
         }
 
         trial.set_user_attr("use_one_cycle", use_one_cycle)
@@ -112,6 +111,9 @@ def objective(
 
         for key, value in trial_values.items():
             cmd += f" --{key} {value}"
+
+        if not use_one_cycle:
+            cmd += " --no-use_one_cycle"
 
         typer.echo(f"Running trial with cmd: {cmd}")
 
