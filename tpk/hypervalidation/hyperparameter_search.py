@@ -113,7 +113,7 @@ def objective(
             cmd += f" --{key} {value}"
 
         if not use_one_cycle:
-            cmd += " --no-use_one_cycle"
+            cmd += " --no-use-one-cycle"
 
         typer.echo(f"Running trial with cmd: {cmd}")
 
