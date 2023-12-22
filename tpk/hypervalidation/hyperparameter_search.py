@@ -55,6 +55,8 @@ def objective(
     model_cls: Literal["tpk", "tsmixer"],
     data_path: str,
     tests_per_trial: int,
+    use_lr_finder: bool,
+    use_one_cycle: bool,
 ) -> Callable[[optuna.Trial], Union[float, Sequence[float]]]:
     def _inner(
         trial: Any,
@@ -62,6 +64,8 @@ def objective(
         model_cls: Literal["tpk", "tsmixer"] = model_cls,
         data_path: str = data_path,
         tests_per_trial: int = tests_per_trial,
+        use_lr_finder: bool = use_lr_finder,
+        use_one_cycle: bool = use_one_cycle,
         batch_size: int = 64,
     ) -> float:
         trial_values = {
@@ -76,23 +80,33 @@ def objective(
             "dropout-rate": trial.suggest_float("dropout_rate", 0.0001, 0.5, log=True),
             "batch-size": batch_size,
             "epochs": trial.suggest_int("num_epochs", 5, 50),
+            "use-one-cycle": use_one_cycle,
         }
 
-        cmd = "tpk find-lr"
+        trial.set_user_attr("use_one_cycle", use_one_cycle)
 
-        for key, value in trial_values.items():
-            cmd += f" --{key} {value}"
+        if use_lr_finder:
+            cmd = "tpk find-lr"
 
-        typer.echo(f"Running LR-find trial with cmd: {cmd}")
+            for key, value in trial_values.items():
+                cmd += f" --{key} {value}"
 
-        lr = asyncio.run(
-            run_model_cmd_parallel(
-                model_cmd=cmd,
-                num_executions=1,
+            typer.echo(f"Running LR-find trial with cmd: {cmd}")
+
+            lr = asyncio.run(
+                run_model_cmd_parallel(
+                    model_cmd=cmd,
+                    num_executions=1,
+                )
+            )[0]
+
+            trial.set_user_attr("learning_rate", lr)
+            trial_values["lr"] = lr
+
+        else:
+            trial_values["lr"] = trial.suggest_float(
+                "learning_rate", 0.0001, 0.5, log=True
             )
-        )[0]
-
-        trial_values["lr"] = lr
 
         cmd = "tpk train-model"
 
@@ -121,6 +135,8 @@ def run_study(
     data_path: Path,
     n_trials: int,
     tests_per_trial: int,
+    use_lr_finder: bool,
+    use_one_cycle: bool,
 ) -> None:
     if not study_journal_path.exists():
         study_journal_path.mkdir(exist_ok=True)
@@ -139,6 +155,8 @@ def run_study(
             model_cls=model_cls,
             data_path=str(data_path),
             tests_per_trial=tests_per_trial,
+            use_lr_finder=use_lr_finder,
+            use_one_cycle=use_one_cycle,
         ),
         n_trials=n_trials,
         catch=(ValueError,),

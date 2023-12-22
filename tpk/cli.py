@@ -47,6 +47,9 @@ def train_model(
         bool, typer.Option(help="Disable future features")
     ] = False,
     use_static_feat: Annotated[bool, typer.Option(help="Use static features")] = True,
+    use_one_cycle: Annotated[
+        bool, typer.Option(help="Whether to use one cycle leraning rate shcedule")
+    ] = False,
 ) -> None:
     from tpk.hypervalidation import train_model as concrete_train_model
 
@@ -63,6 +66,7 @@ def train_model(
         disable_future_feature=disable_future_feat,
         use_static_feat=use_static_feat,
         lr=lr,
+        use_one_cycle=use_one_cycle,
     )
 
     typer.echo(validation_wrmsse)
@@ -85,6 +89,12 @@ def run_study(
         str, typer.Option(help="Path to study journal")
     ] = "data/journal",
     data_path: Annotated[str, typer.Option(help="Path to the dataset")] = "data/m5",
+    use_one_cycle: Annotated[
+        bool, typer.Option(help="Whether to use one cycle leraning rate shcedule")
+    ] = False,
+    use_lr_finder: Annotated[
+        bool, typer.Option(help="Whether to use LR finder to find the learning rate")
+    ] = False,
 ) -> None:
     from tpk.hypervalidation import run_study as concrete_run_study
 
@@ -98,6 +108,8 @@ def run_study(
         study_name=study_name,
         n_trials=n_trials,
         tests_per_trial=tests_per_trial,
+        use_one_cycle=use_one_cycle,
+        use_lr_finder=use_lr_finder,
     )
 
 

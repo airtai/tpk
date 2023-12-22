@@ -19,6 +19,7 @@ def test_train_model() -> None:
         disable_future_feature=False,
         lr=0.001,
         use_static_feat=True,
+        use_one_cycle=False,
     )
     assert wrmsse > 0.0
     assert wrmsse < 100.0

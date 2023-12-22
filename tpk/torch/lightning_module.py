@@ -127,6 +127,7 @@ class MyLightningModule(LightningModule):
         }
 
         if self.use_one_cycle:
+            print(f"{self.use_one_cycle=}, using one cycle scheduler")
             optimizer_config["lr_scheduler"] = {
                 "scheduler": OneCycleLR(
                     optimizer=optimizer,
@@ -135,5 +136,7 @@ class MyLightningModule(LightningModule):
                     steps_per_epoch=self.steps_per_epoch,
                 ),
             }
+        else:
+            print(f"{self.use_one_cycle=}, not using one cycle scheduler")
 
         return optimizer_config

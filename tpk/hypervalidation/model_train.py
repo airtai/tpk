@@ -54,6 +54,7 @@ def train_model(
     disable_future_feature: bool,
     use_static_feat: bool,
     lr: float,
+    use_one_cycle: bool,
 ) -> float:
     train_ds, val_ds, _, stat_cat_cardinalities = load_datasets(data_path)
     estimator = MyEstimator(
@@ -80,7 +81,7 @@ def train_model(
             "max_epochs": epochs,
             "callbacks": [],
         },
-        use_one_cycle=True,
+        use_one_cycle=use_one_cycle,
     )
 
     predictor = estimator.train(train_ds, validation_data=val_ds, num_workers=32)
