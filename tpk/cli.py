@@ -41,11 +41,15 @@ def train_model(
     n_block: Annotated[int, typer.Option(help="Number of model hidden blocks")] = 2,
     hidden_size: Annotated[int, typer.Option(help="Size of hidden layers")] = 256,
     weight_decay: Annotated[float, typer.Option(help="Model weight decay")] = 0.0001,
+    lr: Annotated[float, typer.Option(help="Model learning rate")] = 0.0001,
     dropout_rate: Annotated[float, typer.Option(help="Model dropout rate")] = 0.0001,
     disable_future_feat: Annotated[
         bool, typer.Option(help="Disable future features")
     ] = False,
     use_static_feat: Annotated[bool, typer.Option(help="Use static features")] = True,
+    use_one_cycle: Annotated[
+        bool, typer.Option(help="Whether to use one cycle leraning rate shcedule")
+    ] = False,
 ) -> None:
     from tpk.hypervalidation import train_model as concrete_train_model
 
@@ -61,6 +65,8 @@ def train_model(
         dropout_rate=dropout_rate,
         disable_future_feature=disable_future_feat,
         use_static_feat=use_static_feat,
+        lr=lr,
+        use_one_cycle=use_one_cycle,
     )
 
     typer.echo(validation_wrmsse)
@@ -83,6 +89,12 @@ def run_study(
         str, typer.Option(help="Path to study journal")
     ] = "data/journal",
     data_path: Annotated[str, typer.Option(help="Path to the dataset")] = "data/m5",
+    use_one_cycle: Annotated[
+        bool, typer.Option(help="Whether to use one cycle leraning rate shcedule")
+    ] = False,
+    use_lr_finder: Annotated[
+        bool, typer.Option(help="Whether to use LR finder to find the learning rate")
+    ] = False,
 ) -> None:
     from tpk.hypervalidation import run_study as concrete_run_study
 
@@ -96,4 +108,49 @@ def run_study(
         study_name=study_name,
         n_trials=n_trials,
         tests_per_trial=tests_per_trial,
+        use_one_cycle=use_one_cycle,
+        use_lr_finder=use_lr_finder,
     )
+
+
+@app.command()
+def find_lr(
+    model_cls: Annotated[
+        str,
+        typer.Option(help="Class of the model to be trained, can be: tsmixer or tpk"),
+    ] = "tsmixer",
+    data_path: Annotated[str, typer.Option(help="Path to the dataset")] = "data/m5",
+    batch_size: Annotated[int, typer.Option(help="Batch size for model training")] = 64,
+    epochs: Annotated[
+        int, typer.Option(help="Number of epochs to run the model training")
+    ] = 300,
+    context_length: Annotated[
+        int, typer.Option(help="Context length of the model")
+    ] = 30,
+    n_block: Annotated[int, typer.Option(help="Number of model hidden blocks")] = 2,
+    hidden_size: Annotated[int, typer.Option(help="Size of hidden layers")] = 256,
+    weight_decay: Annotated[float, typer.Option(help="Model weight decay")] = 0.0001,
+    dropout_rate: Annotated[float, typer.Option(help="Model dropout rate")] = 0.0001,
+    disable_future_feat: Annotated[
+        bool, typer.Option(help="Disable future features")
+    ] = False,
+    use_static_feat: Annotated[bool, typer.Option(help="Use static features")] = True,
+) -> None:
+    from tpk.hypervalidation import find_lr as concrete_find_lr
+
+    lr = concrete_find_lr(
+        model_cls=get_model_cls(model_cls),  # type: ignore
+        data_path=data_path,
+        batch_size=batch_size,
+        epochs=epochs,
+        context_length=context_length,
+        n_block=n_block,
+        hidden_size=hidden_size,
+        weight_decay=weight_decay,
+        dropout_rate=dropout_rate,
+        disable_future_feature=disable_future_feat,
+        use_static_feat=use_static_feat,
+        lr=0.0,
+    )
+
+    typer.echo(lr)

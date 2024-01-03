@@ -36,6 +36,8 @@ def test_run_study() -> None:
             study_name="test_study",
             n_trials=1,
             tests_per_trial=1,
+            use_one_cycle=False,
+            use_lr_finder=False,
         )
 
         assert (study_journal_path / "journal.log").exists()

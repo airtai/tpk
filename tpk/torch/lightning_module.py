@@ -51,7 +51,9 @@ class MyLightningModule(LightningModule):
         steps_per_epoch: int,
         loss: Optional[DistributionLoss] = None,
         weight_decay: float = 1e-8,
+        lr: float = 0.0,
         patience: int = 10,
+        use_one_cycle: bool = False,
     ) -> None:
         super().__init__()
         self.loss = NegativeLogLikelihood() if loss is None else loss
@@ -61,7 +63,8 @@ class MyLightningModule(LightningModule):
         self.patience = patience
         self.epochs = epochs
         self.steps_per_epoch = steps_per_epoch
-        self.lr = 0.0
+        self.lr = lr
+        self.use_one_cycle = use_one_cycle
         self.example_input_array = tuple(
             [
                 torch.zeros(shape, dtype=self.model.input_types()[name])
@@ -123,7 +126,8 @@ class MyLightningModule(LightningModule):
             "optimizer": optimizer,
         }
 
-        if self.lr != 0.0:
+        if self.use_one_cycle:
+            print(f"{self.use_one_cycle=}, using one cycle scheduler")
             optimizer_config["lr_scheduler"] = {
                 "scheduler": OneCycleLR(
                     optimizer=optimizer,
@@ -132,5 +136,7 @@ class MyLightningModule(LightningModule):
                     steps_per_epoch=self.steps_per_epoch,
                 ),
             }
+        else:
+            print(f"{self.use_one_cycle=}, not using one cycle scheduler")
 
         return optimizer_config
